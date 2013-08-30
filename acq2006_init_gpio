@@ -18,5 +18,5 @@ let site=0; while [ $site -lt 6 ]; do
 done
 
 echo 1 >gpio254/active_low; ln -s $PWD/gpio254/value /dev/gpio/15VP_PGD
-echo 1 >gpio255/active_low; ln -s $PWD/gpio255/value /dev/gpio/15VP_PGD
+echo 1 >gpio255/active_low; ln -s $PWD/gpio255/value /dev/gpio/15VN_PGD
 	
