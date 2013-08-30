@@ -1,0 +1,22 @@
+#!/bin/sh
+
+mkdir -p /dev/gpio
+cd /sys/class/gpio
+
+
+for pin in $(seq 216 255)
+do
+	echo $pin >export
+done
+
+let site=0; while [ $site -lt 6 ]; do
+	let gpio=248+$site
+	GPIO=gpio${gpio}
+	echo 1 > $GPIO/active_low
+	ln -s $PWD/${GPIO}/value /dev/gpio/fmc${site}_present
+	let site=$site+1
+done
+
+echo 1 >gpio254/active_low; ln -s $PWD/gpio254/value /dev/gpio/15VP_PGD
+echo 1 >gpio255/active_low; ln -s $PWD/gpio255/value /dev/gpio/15VP_PGD
+	
