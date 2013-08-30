@@ -3,6 +3,15 @@
 mkdir -p /dev/gpio
 cd /sys/class/gpio
 
+setO() {
+	echo out >$1/direction
+}
+setAL() {
+	echo 1 >$1/active_low
+}
+mkln() {
+	ln -s $PWD/$1/value /dev/gpio/$2
+}
 
 for pin in $(seq 216 255)
 do
@@ -12,11 +21,35 @@ done
 let site=0; while [ $site -lt 6 ]; do
 	let gpio=248+$site
 	GPIO=gpio${gpio}
-	echo 1 > $GPIO/active_low
-	ln -s $PWD/${GPIO}/value /dev/gpio/fmc${site}_present
+	setAL $GPIO; mkln ${GPIO} fmc${site}_present
 	let site=$site+1
 done
 
-echo 1 >gpio254/active_low; ln -s $PWD/gpio254/value /dev/gpio/15VP_PGD
-echo 1 >gpio255/active_low; ln -s $PWD/gpio255/value /dev/gpio/15VN_PGD
-	
+setAL gpio254; mkln gpio254 15VP_PGD
+setAL gpio255; mkln gpio255 15VN_PGD
+
+
+for pin in $(seq 224 231) $(seq 216 219)
+do
+	setO gpio${pin}
+done
+
+		mkln gpio224 ICS_CLK2_OE
+setAL gpio225; 	mkln gpio225 OSC_X_OE
+setAL gpio226;	mkln gpio226 OSC_X_CLK_OE
+setAL gpio227;	mkln gpio227 FP_CLK_OE
+setAL gpio228;	mkln gpio228 FP_OE
+		mkln gpio229 Si570_OE
+		mkln gpio230 15VA_EN
+		mkln gpio231 PSU_SYNC_CLK_OE
+
+setAL gpio216;	mkln gpio216 LED_G_CLK
+setAL gpio217;	mkln gpio217 LED_R_CLK
+setAL gpio218;	mkln gpio218 LED_G_TRG
+setAL gpio219; 	mkln gpio219 LED_R_TRG
+
+		mkln gpio220 BV_EE
+		mkln gpio221 BV_RSV1
+		mkln gpio222 BV_RSV2
+		mkln gpio222 JTAG14_ALL
+
