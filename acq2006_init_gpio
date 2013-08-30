@@ -53,3 +53,13 @@ setAL gpio219; 	mkln gpio219 LED_R_TRG
 		mkln gpio222 BV_RSV2
 		mkln gpio222 JTAG14_ALL
 
+# OK, this isn't gpio, but it's handy to put it here:
+
+mkdir -p /dev/hwmon0
+ln -s /sys/class/hwmon/hwmon0/device/temp1_input /dev/hwmon0/temp
+ln -s /sys/class/hwmon/hwmon0/device/in1_input	 /dev/hwmon0/15VA_N
+ln -s /sys/class/hwmon/hwmon0/device/in2_input	 /dev/hwmon0/15VA_P
+ln -s /sys/class/hwmon/hwmon0/device/in3_input	 /dev/hwmon0/5V_P
+ln -s /sys/class/hwmon/hwmon0/device/in4_input	 /dev/hwmon0/VADJ
+
+
