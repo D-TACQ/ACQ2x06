@@ -18,6 +18,35 @@ do
 	echo $pin >export
 done
 
+
+for pin in $(seq 240 247) $(seq 232 239)
+do
+	setO gpio$pin
+done
+
+mkdir -p /dev/gpio/CLK/RDW
+mkln gpio240 CLK/RDW/R6
+mkln gpio241 CLK/RDW/R5
+mkln gpio242 CLK/RDW/R4
+mkln gpio243 CLK/RDW/R3
+mkln gpio244 CLK/RDW/R2
+mkln gpio245 CLK/RDW/R1
+mkln gpio246 CLK/RDW/R0
+
+mkdir /dev/gpio/CLK/FDW
+mkln gpio247 CLK/FDW/F6
+mkln gpio232 CLK/FDW/F5
+mkln gpio233 CLK/FDW/F4
+mkln gpio234 CLK/FDW/F3
+mkln gpio235 CLK/FDW/F2
+mkln gpio236 CLK/FDW/F1
+mkln gpio237 CLK/FDW/F0
+
+mkdir /dev/gpio/CLK/ODW
+mkln gpio238 CLK/ODW/S1
+mkln gpio239 CLK/ODW/S0
+
+
 let site=0; while [ $site -lt 6 ]; do
 	let gpio=248+$site
 	GPIO=gpio${gpio}
