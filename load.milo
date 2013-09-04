@@ -1,0 +1,12 @@
+#!/bin/sh
+
+cd /mnt/modules
+
+
+for MOD in mfd-core.ko regmap-i2c.ko lp3943.ko gpio-lp3943.ko pwm-lp3943.ko
+do
+	/sbin/insmod $MOD
+done
+
+echo 0 > /sys/class/pwm/pwmchip0/export
+

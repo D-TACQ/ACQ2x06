@@ -1,0 +1,14 @@
+#!/bin/sh
+
+mkdir -p /dev/sites
+
+for PRD in /dev/gpio/*present
+do
+	_PRDx=${PRD#/dev/gpio/fmc}
+	SITE=${_PRDx%_present}
+	if [ $(cat $PRD) -ne 0 ]; then
+		mkdir /dev/sites/$SITE
+		let BUS=$SITE+2
+		ln -s /sys/bus/i2c/devices/${BUS}-0050/eeprom /dev/sites/$SITE
+	fi
+done
