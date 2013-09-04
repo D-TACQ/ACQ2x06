@@ -84,7 +84,7 @@ mkln gpio219 LED/TRG_R 		AL
 mkln gpio220 BV_EE
 mkln gpio221 BV_RSV1
 mkln gpio222 BV_RSV2
-mkln gpio222 JTAG14_ALL
+mkln gpio223 JTAG14_ALL
 
 # LP3943ISQ
 
