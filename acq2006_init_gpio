@@ -11,9 +11,12 @@ setAL() {
 }
 mkln() {
 	ln -s $PWD/$1/value /dev/gpio/$2
+	if [ "x$3" = "xAL" ]; then
+		setAL $1
+	fi
 }
 
-for pin in $(seq 216 255)
+for pin in $(seq 200 255)
 do
 	echo $pin >export
 done
@@ -54,8 +57,8 @@ let site=0; while [ $site -lt 6 ]; do
 	let site=$site+1
 done
 
-setAL gpio254; mkln gpio254 15VP_PGD
-setAL gpio255; mkln gpio255 15VN_PGD
+mkln gpio254 15VP_PGD 		AL
+mkln gpio255 15VN_PGD 		AL
 
 
 for pin in $(seq 224 231) $(seq 216 219)
@@ -63,24 +66,48 @@ do
 	setO gpio${pin}
 done
 
-		mkln gpio224 ICS_CLK2_OE
-setAL gpio225; 	mkln gpio225 OSC_X_OE
-setAL gpio226;	mkln gpio226 OSC_X_CLK_OE
-setAL gpio227;	mkln gpio227 FP_CLK_OE
-setAL gpio228;	mkln gpio228 FP_OE
-		mkln gpio229 Si570_OE
-		mkln gpio230 15VA_EN
-		mkln gpio231 PSU_SYNC_CLK_OE
+mkln gpio224 ICS_CLK2_OE
+mkln gpio225 OSC_X_OE 		AL
+mkln gpio226 OSC_X_CLK_OE	AL
+mkln gpio227 FP_CLK_OE 		AL
+mkln gpio228 FP_OE		AL
+mkln gpio229 Si570_OE
+mkln gpio230 15VA_EN
+mkln gpio231 PSU_SYNC_CLK_OE
 
-setAL gpio216;	mkln gpio216 LED_G_CLK
-setAL gpio217;	mkln gpio217 LED_R_CLK
-setAL gpio218;	mkln gpio218 LED_G_TRG
-setAL gpio219; 	mkln gpio219 LED_R_TRG
+mkdir -p /dev/gpio/LED
+mkln gpio216 LED/CLK_G 		AL
+mkln gpio217 LED/CLK_R 		AL
+mkln gpio218 LED/TRG_G 		AL
+mkln gpio219 LED/TRG_R 		AL
 
-		mkln gpio220 BV_EE
-		mkln gpio221 BV_RSV1
-		mkln gpio222 BV_RSV2
-		mkln gpio222 JTAG14_ALL
+mkln gpio220 BV_EE
+mkln gpio221 BV_RSV1
+mkln gpio222 BV_RSV2
+mkln gpio222 JTAG14_ALL
+
+# LP3943ISQ
+
+for pin in $(seq 200 214)
+do
+	setO gpio${pin}
+done
+
+mkln gpio200 FAN_EN 
+mkln gpio201 LED/FMC0_G 	AL
+mkln gpio202 LED/FMC1_G 	AL
+mkln gpio203 LED/FMC2_G		AL
+mkln gpio204 LED/FMC3_G 	AL
+mkln gpio205 LED/FMC4_G 	AL
+mkln gpio206 LED/FMC5_G 	AL
+mkln gpio207 LED/FMC0_R 	AL
+mkln gpio208 LED/FMC1_R 	AL
+mkln gpio209 LED/FMC2_R 	AL
+mkln gpio210 LED/FMC3_R 	AL
+mkln gpio211 LED/FMC4_R 	AL
+mkln gpio212 LED/FMC5_R 	AL
+mkln gpio213 LED/ACT_G  	AL
+mkln gpio214 LED/ACT_R  	AL
 
 # OK, this isn't gpio, but it's handy to put it here:
 
