@@ -72,7 +72,7 @@ mkln gpio226 OSC_X_CLK_OE	AL
 mkln gpio227 FP_CLK_OE 		AL
 mkln gpio228 FP_OE		AL
 mkln gpio229 Si570_OE
-mkln gpio230 15VA_EN
+mkln gpio230 15VA_EN		AL
 mkln gpio231 PSU_SYNC_CLK_OE
 
 mkdir -p /dev/gpio/LED
