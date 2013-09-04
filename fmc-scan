@@ -10,5 +10,46 @@ do
 		mkdir /dev/sites/$SITE
 		let BUS=$SITE+2
 		ln -s /sys/bus/i2c/devices/${BUS}-0050/eeprom /dev/sites/$SITE
+		echo 1 >/dev/gpio/LED/FMC${SITE}_R
 	fi
 done
+
+SITES="sites="
+GOOD_SITES="good_sites="
+
+aappend() {
+	case $1 in
+	*=) echo $1$2;;
+	*)  echo $1,$2;;
+	esac
+}
+
+
+let site_count=0
+
+for sd in /dev/sites/*
+do
+	site=$(basename $sd)
+	SITES=$(aappend $SITES $site)
+	fru-dump-acq ${sd}/eeprom > ${sd}/details
+	grep -q FRU_PROD_NAME ${sd}/details
+	if [ $? -eq 0 ]; then
+		GOOD_SITES=$(aappend $GOOD_SITES $site)
+	fi
+	let site_count=$site_count+1
+done
+
+echo $SITES > /etc/sites
+echo $GOOD_SITES >>/etc/sites
+
+source /etc/sites
+
+if [ "x$sites" = "x$good_sites" ]; then
+	echo ++ Sites populated: $site_count ALL GOOD
+	echo ++ Enable analog power..
+	echo 1 >/dev/gpio/15VA_EN
+else
+	echo ++ Sites populated: $site_count WARNING: FOUND:$sites GOOD:$good_sites
+fi
+
+
