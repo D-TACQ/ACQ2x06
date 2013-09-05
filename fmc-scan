@@ -8,7 +8,7 @@ do
 	SITE=${_PRDx%_present}
 	if [ $(cat $PRD) -ne 0 ]; then
 		mkdir /dev/sites/$SITE
-		let BUS=$SITE+2
+		let BUS=$SITE+1
 		ln -s /sys/bus/i2c/devices/${BUS}-0050/eeprom /dev/sites/$SITE
 		echo 1 >/dev/gpio/LED/FMC${SITE}_R
 	fi
