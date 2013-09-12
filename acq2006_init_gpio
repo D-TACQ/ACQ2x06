@@ -95,7 +95,7 @@ done
 
 mkln gpio200 FAN_EN 
 mkln gpio201 LED/FMC1_G 	AL
-mkln gpio202 LED/FMC2 G 	AL
+mkln gpio202 LED/FMC2_G 	AL
 mkln gpio203 LED/FMC3_G		AL
 mkln gpio204 LED/FMC4_G 	AL
 mkln gpio205 LED/FMC5_G 	AL
@@ -108,6 +108,27 @@ mkln gpio211 LED/FMC5_R 	AL
 mkln gpio212 LED/FMC6_R 	AL
 mkln gpio213 LED/ACT_G  	AL
 mkln gpio214 LED/ACT_R  	AL
+	
+clear_leds() {	
+	for LED in /dev/gpio/LED/*
+	do
+		echo 0 > $LED
+	done
+}
+
+test_leds() {
+	for LED in /dev/gpio/LED/*
+	do
+		echo 1 > $LED
+		sleep 0.5
+		echo 0 > $LED
+	done
+}
+	
+clear_leds
+test_leds
+clear_leds
+
 
 # OK, this isn't gpio, but it's handy to put it here:
 
