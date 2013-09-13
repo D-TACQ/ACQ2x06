@@ -120,14 +120,13 @@ test_leds() {
 	for LED in /dev/gpio/LED/*
 	do
 		echo 1 > $LED
-		sleep 0.5
+		sleep 0.2
 		echo 0 > $LED
 	done
 }
 	
 clear_leds
 test_leds
-clear_leds
 
 
 # OK, this isn't gpio, but it's handy to put it here:
