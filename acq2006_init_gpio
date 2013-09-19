@@ -3,6 +3,11 @@
 mkdir -p /dev/gpio
 cd /sys/class/gpio
 
+getchip() {
+	addr=$1
+	ls -l gpiochip* | grep $addr | awk '{ print $9 }'
+}
+
 setO() {
 	echo out >$1/direction
 }
@@ -16,7 +21,7 @@ mkln() {
 	fi
 }
 
-for pin in $(seq 200 255)
+for pin in $(seq 216 255)
 do
 	echo $pin >export
 done
@@ -88,26 +93,41 @@ mkln gpio223 JTAG14_ALL
 
 # LP3943ISQ
 
-for pin in $(seq 200 214)
+LEDSCHIP=$(getchip 1-0060)
+if [ $? -ne 0 ]; then
+	echo +++ ERROR: LEDSCHIP NOT FOUND
+else
+	echo +++ LEDSCHIP FOUND $LEDSCHIP
+fi
+let LED0=${LEDSCHIP#gpiochip*}
+let LED1=$LED0+14
+
+gpioLED() {
+	let lgp=$LED0+$1
+	echo gpio$lgp
+}
+
+for pin in $(seq $LED0 $LED1)
 do
+	echo $pin >export
 	setO gpio${pin}
 done
 
-mkln gpio200 FAN_EN 
-mkln gpio201 LED/FMC1_G 	AL
-mkln gpio202 LED/FMC2_G 	AL
-mkln gpio203 LED/FMC3_G		AL
-mkln gpio204 LED/FMC4_G 	AL
-mkln gpio205 LED/FMC5_G 	AL
-mkln gpio206 LED/FMC6_G 	AL
-mkln gpio207 LED/FMC1_R 	AL
-mkln gpio208 LED/FMC2_R 	AL
-mkln gpio209 LED/FMC3_R 	AL
-mkln gpio210 LED/FMC4_R 	AL
-mkln gpio211 LED/FMC5_R 	AL
-mkln gpio212 LED/FMC6_R 	AL
-mkln gpio213 LED/ACT_G  	AL
-mkln gpio214 LED/ACT_R  	AL
+mkln $(gpioLED  0) FAN_EN 
+mkln $(gpioLED  1) LED/FMC1_G 	AL
+mkln $(gpioLED  2) LED/FMC2_G 	AL
+mkln $(gpioLED  3) LED/FMC3_G	AL
+mkln $(gpioLED  4) LED/FMC4_G 	AL
+mkln $(gpioLED  5) LED/FMC5_G 	AL
+mkln $(gpioLED  6) LED/FMC6_G 	AL
+mkln $(gpioLED  7) LED/FMC1_R 	AL
+mkln $(gpioLED  8) LED/FMC2_R 	AL
+mkln $(gpioLED  9) LED/FMC3_R 	AL
+mkln $(gpioLED 10) LED/FMC4_R 	AL
+mkln $(gpioLED 11) LED/FMC5_R 	AL
+mkln $(gpioLED 12) LED/FMC6_R 	AL
+mkln $(gpioLED 13) LED/ACT_G  	AL
+mkln $(gpioLED 14) LED/ACT_R  	AL
 	
 clear_leds() {	
 	for LED in /dev/gpio/LED/*
