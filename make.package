@@ -10,9 +10,10 @@ KO="./drivers/gpio/gpio-lp3943.ko\
 	./drivers/base/regmap/regmap-i2c.ko"
 
 
+find 
 for ko in $KO
 do
-	cp ../../linux-xlnx/$ko opkg/usr/local/modules
+	cp ../../linux-xlnx/$ko opkg/usr/local/lib/modules
 done
 
 cp acq2006_init_gpio  fmc-scan  fru-dump-acq  load.milo opkg/usr/local/bin
@@ -22,4 +23,5 @@ cp acq2006.init opkg/usr/local/init
 tar czf release/${SEQ}-acq2006-${DC}.tgz -C opkg .
 rm -Rf ../../PACKAGES/${SEQ}-acq2006*
 cp release/${SEQ}-acq2006-${DC}.tgz ../../PACKAGES/
+echo cp release/${SEQ}-acq2006-${DC}.tgz ../../PACKAGES/
 
