@@ -13,6 +13,7 @@ setO() {
 }
 setAL() {
 	echo 1 >$1/active_low
+	echo 0 >$1/value
 }
 mkln() {
 	ln -s $PWD/$1/value /dev/gpio/$2
