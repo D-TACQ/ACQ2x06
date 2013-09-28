@@ -13,6 +13,9 @@ setO() {
 }
 setAL() {
 	echo 1 >$1/active_low
+	if [ "$(cat $1/direction)" = "out" ]; then
+		echo 0 >$1/value
+	fi
 }
 mkln() {
 	ln -s $PWD/$1/value /dev/gpio/$2
@@ -32,27 +35,28 @@ do
 	setO gpio$pin
 done
 
-mkdir -p /dev/gpio/CLK/RDW
-mkln gpio240 CLK/RDW/R6
-mkln gpio241 CLK/RDW/R5
-mkln gpio242 CLK/RDW/R4
-mkln gpio243 CLK/RDW/R3
-mkln gpio244 CLK/RDW/R2
-mkln gpio245 CLK/RDW/R1
-mkln gpio246 CLK/RDW/R0
 
-mkdir /dev/gpio/CLK/FDW
-mkln gpio247 CLK/FDW/F6
-mkln gpio232 CLK/FDW/F5
-mkln gpio233 CLK/FDW/F4
-mkln gpio234 CLK/FDW/F3
-mkln gpio235 CLK/FDW/F2
-mkln gpio236 CLK/FDW/F1
-mkln gpio237 CLK/FDW/F0
+mkdir -p /dev/gpio/CLK/MB/RDW
+mkln gpio240 CLK/MB/RDW/R6
+mkln gpio241 CLK/MB/RDW/R5
+mkln gpio242 CLK/MB/RDW/R4
+mkln gpio243 CLK/MB/RDW/R3
+mkln gpio244 CLK/MB/RDW/R2
+mkln gpio245 CLK/MB/RDW/R1
+mkln gpio246 CLK/MB/RDW/R0
 
-mkdir /dev/gpio/CLK/ODW
-mkln gpio238 CLK/ODW/S1
-mkln gpio239 CLK/ODW/S0
+mkdir /dev/gpio/CLK/MB/FDW
+mkln gpio247 CLK/MB/FDW/F6
+mkln gpio232 CLK/MB/FDW/F5
+mkln gpio233 CLK/MB/FDW/F4
+mkln gpio234 CLK/MB/FDW/F3
+mkln gpio235 CLK/MB/FDW/F2
+mkln gpio236 CLK/MB/FDW/F1
+mkln gpio237 CLK/MB/FDW/F0
+
+mkdir /dev/gpio/CLK/MB/ODW
+mkln gpio238 CLK/MB/ODW/S1
+mkln gpio239 CLK/MB/ODW/S0
 
 
 let site=1; while [ $site -le 6 ]; do
@@ -71,11 +75,11 @@ do
 	setO gpio${pin}
 done
 
-mkln gpio224 ICS_CLK2_OE
-mkln gpio225 OSC_X_OE 		AL
-mkln gpio226 OSC_X_CLK_OE	AL
-mkln gpio227 FP_CLK_OE 		AL
-mkln gpio228 FP_OE		AL
+mkln gpio224 CLK/MB/ICS_CLK2_OE
+mkln gpio225 CLK/OSC_X_OE 	AL
+mkln gpio226 CLK/OSC_X_CLK_OE	AL
+mkln gpio227 CLK/FP_CLK_OE 	AL
+mkln gpio228 CLK/FP_OE		AL
 mkln gpio229 Si570_OE
 mkln gpio230 15VA_EN		AL
 mkln gpio231 PSU_SYNC_CLK_OE
@@ -114,6 +118,12 @@ do
 done
 
 mkln $(gpioLED  0) FAN_EN 
+set.sys /dev/gpio/FAN_EN 0
+set.sys /sys/class/pwm/pwmchip0/pwm0/polarity inversed
+set.sys /sys/class/pwm/pwmchip0/pwm0/period 100000
+set.sys /sys/class/pwm/pwmchip0/pwm0/duty_cycle 50000
+set.sys /sys/class/pwm/pwmchip0/pwm0/enable 1
+
 mkln $(gpioLED  1) LED/FMC1_G 	AL
 mkln $(gpioLED  2) LED/FMC2_G 	AL
 mkln $(gpioLED  3) LED/FMC3_G	AL
