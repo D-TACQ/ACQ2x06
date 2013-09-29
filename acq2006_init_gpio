@@ -85,10 +85,11 @@ mkln gpio230 15VA_EN		AL
 mkln gpio231 PSU_SYNC_CLK_OE
 
 mkdir -p /dev/gpio/LED
-mkln gpio216 LED/CLK_G 		AL
-mkln gpio217 LED/CLK_R 		AL
-mkln gpio218 LED/TRG_G 		AL
-mkln gpio219 LED/TRG_R 		AL
+# CLK TRG swapped pgm 20130928
+mkln gpio216 LED/TRG_G 		AL
+mkln gpio217 LED/TRG_R 		AL
+mkln gpio218 LED/CLK_G 		AL
+mkln gpio219 LED/CLK_R 		AL
 
 mkln gpio220 BV_EE
 mkln gpio221 BV_RSV1
