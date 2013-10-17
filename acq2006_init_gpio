@@ -163,11 +163,6 @@ test_leds
 # OK, this isn't gpio, but it's handy to put it here:
 
 mkdir -p /dev/hwmon
-ln -s /sys/class/hwmon/hwmon0/device/temp1_input /dev/hwmon/0/temp
-ln -s /sys/class/hwmon/hwmon0/device/in1_input	 /dev/hwmon/0/15VA_N
-ln -s /sys/class/hwmon/hwmon0/device/in2_input	 /dev/hwmon/0/15VA_P
-ln -s /sys/class/hwmon/hwmon0/device/in3_input	 /dev/hwmon/0/5V_P
-ln -s /sys/class/hwmon/hwmon0/device/in4_input	 /dev/hwmon/0/VADJ
 
 for S in 0 1 2 3 4 5 6 7
 do
