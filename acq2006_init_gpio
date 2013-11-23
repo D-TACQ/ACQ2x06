@@ -54,11 +54,10 @@ mkln gpio0 LED_ACT
 show_act &
 
 mkln gpio9 I2C_RESET AL
-setHI dev/gpio/I2C_RESET
-echo 1 > /dev/gpio/I2C_RESET
+setHI /dev/gpio/I2C_RESET
 sleep 0.1
 setLO /dev/gpio/I2C_RESET
-echo I2C_RESET done
+echo +++ I2C_RESET done
 
 mkln gpio47 EXT_WP AL
 
