@@ -3,9 +3,21 @@
 mkdir -p /dev/gpio
 cd /sys/class/gpio
 
+export_gpio() {
+	echo $1 > export
+}
+
 getchip() {
 	addr=$1
 	ls -l gpiochip* | grep $addr | awk '{ print $9 }'
+}
+
+setHI() {
+	echo 1 > $1
+}
+
+setLO() {
+	echo 0 > $1
 }
 
 setO() {
@@ -24,9 +36,38 @@ mkln() {
 	fi
 }
 
+show_act() {
+	while [ 1 ]; do
+		setHI /dev/gpio/LED_ACT
+		sleep 0.5
+		setLO /dev/gpio/LED_ACT
+		sleep 0.5
+	done
+}
+
+# Zynq GPIO
+export_gpio  0; setO 0
+export_gpio  9; setO 9
+export_gpio 47;
+
+mkln gpio0 /dev/gpio/LED_ACT;
+show_act &
+
+mkln gpio9 /dev/gpio/I2C_RESET AL
+setHI dev/gpio/I2C_RESET
+echo 1 > /dev/gpio/I2C_RESET
+sleep 0.1
+setLO /dev/gpio/I2C_RESET
+echo I2C_RESET done
+
+mkln gpio47 /dev/gpio/EXT_WP AL
+
+
+# i2c gpio 
+
 for pin in $(seq 216 255)
 do
-	echo $pin >export
+	export_gpio $pin
 done
 
 
@@ -114,7 +155,7 @@ gpioLED() {
 
 for pin in $(seq $LED0 $LED1)
 do
-	echo $pin >export
+	export_gpio $pin
 	setO gpio${pin}
 done
 
@@ -150,9 +191,9 @@ clear_leds() {
 test_leds() {
 	for LED in /dev/gpio/LED/*
 	do
-		echo 1 > $LED
+		setHI $LED
 		sleep 0.2
-		echo 0 > $LED
+		setLO $LED
 	done
 }
 	
