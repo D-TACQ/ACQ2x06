@@ -45,19 +45,24 @@ show_act() {
 	done
 }
 
+i2c_reset() {
+	setHI /dev/gpio/I2C_RESET
+	sleep 0.1
+	setLO /dev/gpio/I2C_RESET
+	echo +++ I2C_RESET done
+}
+
+
 # Zynq GPIO
 export_gpio  0; setO gpio0
-export_gpio  9; setO gpio9
 export_gpio 47;
 
 mkln gpio0 LED_ACT
 show_act &
 
-mkln gpio9 I2C_RESET AL
-setHI /dev/gpio/I2C_RESET
-sleep 0.1
-setLO /dev/gpio/I2C_RESET
-echo +++ I2C_RESET done
+#export_gpio  9; setO gpio9
+#mkln gpio9 I2C_RESET AL
+#i2c_reset
 
 mkln gpio47 EXT_WP AL
 
