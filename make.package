@@ -3,6 +3,9 @@
 DC=$(date +%y%m%d%H%M%S)
 SEQ=05
 
+mkdir -p opkg/usr/local/bin
+
+
 KO="./drivers/gpio/gpio-lp3943.ko\
 	./drivers/mfd/lp3943.ko\
 	./drivers/mfd/mfd-core.ko\
@@ -19,6 +22,8 @@ done
 cp acq2006_init_gpio  fmc-scan  fru-dump-acq  load.milo opkg/usr/local/bin
 cp acq2006.map   opkg/usr/local/
 cp acq2006.init opkg/usr/local/init
+
+cp ../UTILS/ob_calc_527 set_mb_clk opkg/usr/local/bin
 
 tar czf release/${SEQ}-acq2006-${DC}.tgz -C opkg .
 rm -Rf ../../PACKAGES/${SEQ}-acq2006*
