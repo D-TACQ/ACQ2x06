@@ -1,0 +1,43 @@
+#!/bin/sh
+# set the front panel MUX state
+
+base=${0##*/}
+
+setget=${base%%.*}
+
+KNOBS="FP_CLK_OE FP_OE OSC_X_CLK_OE OSC_X_OE"
+FPCLK="1 1 0 0"
+XCLK="0 0 1 1"
+OFF="0 0 0 0"
+
+doit() {
+	for K in $KNOBS
+	do
+		echo set.sys /dev/gpio/CLK/$K $1
+		set.sys /dev/gpio/CLK/$K $1
+
+		shift
+	done
+}
+
+squish() {
+	echo $1 | tr -d \  
+}
+
+if [ "$setget" = "get" ]; then
+	BITS=$(cat /dev/gpio/CLK/*OE)
+	BITS=$(squish $BITS)
+	case $BITS in
+	$(squish $XCLK)) 	echo xclk;;
+	$(squish $FPCLK)) 	echo fpclk;;
+	$(squish $OFF)) 	echo off;;
+	*)	 		echo ERROR;;
+	esac
+else
+	case $1 in
+	fpclk)	doit $FPCLK;;
+	xclk) 	doit $XCLK;;
+	*)	doit $OFF;;
+	esac
+fi	
+
