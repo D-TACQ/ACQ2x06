@@ -10,6 +10,9 @@ FPCLK="1 1 0 0"
 XCLK="0 0 1 1"
 OFF="0 0 0 0"
 
+PF=/dev/shm/platform/clk
+mkdir -p $PF
+
 doit() {
 	for K in $KNOBS
 	do
@@ -28,16 +31,16 @@ if [ "$setget" = "get" ]; then
 	BITS=$(cat /dev/gpio/CLK/*OE)
 	BITS=$(squish $BITS)
 	case $BITS in
-	$(squish $XCLK)) 	echo xclk;;
-	$(squish $FPCLK)) 	echo fpclk;;
-	$(squish $OFF)) 	echo off;;
+	$(squish $XCLK)) 	echo 1 > $PF/FPMUX; echo xclk;;
+	$(squish $FPCLK)) 	echo 2 > $PF/FPMUX; echo fpclk;;
+	$(squish $OFF)) 	echo 0 > $PF/FPMUX; echo off;;
 	*)	 		echo ERROR;;
 	esac
 else
 	case $1 in
-	fpclk)	doit $FPCLK;;
-	xclk) 	doit $XCLK;;
-	*)	doit $OFF;;
+	fpclk)	echo 2 > $PF/FPMUX; doit $FPCLK;;
+	xclk) 	echo 1 > $PF/FPMUX; doit $XCLK;;
+	*)	echo 0 > $PF/FPMUX; doit $OFF;;
 	esac
 fi	
 
