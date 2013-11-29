@@ -4,7 +4,9 @@
 /usr/local/bin/acq2006_init_gpio
 /usr/local/bin/fmc-scan
 
+echo +++ add set_mb_clk to inetd
 killall inetd
 echo "4230 stream tcp nowait root /usr/local/bin/set_mb_clk set_mb_clk -d" \
-	>>/usr/local/init/inetd.conf
-inetd /usr/local/init/inetd.conf
+	>>/etc/inetd.conf
+inetd /etc/inetd.conf
+
