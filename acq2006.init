@@ -4,6 +4,13 @@
 /usr/local/bin/acq2006_init_gpio
 /usr/local/bin/fmc-scan
 
+mkdir -p /etc/acq400/0
+ln -s /usr/local/bin/get.fpmux /etc/acq400/0/get.fpmux
+ln -s /usr/local/bin/set.fpmux /etc/acq400/0/set.fpmux
+ln -s /usr/local/bin/set_mb_clk /etc/acq400/0/set_mb_clk
+
+set.fpmux off
+
 echo +++ add set_mb_clk to inetd
 killall inetd
 echo "4230 stream tcp nowait root /usr/local/bin/set_mb_clk set_mb_clk -d" \
