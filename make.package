@@ -18,7 +18,8 @@ do
 	cp ../../linux-xlnx/$ko opkg/usr/local/lib/modules
 done
 
-cp acq2006_init_gpio  fmc-scan  fru-dump-acq  load.milo opkg/usr/local/bin
+cp acq2006_init_gpio  fmc-scan  fru-dump-acq  load.milo heartbeat \
+	opkg/usr/local/bin
 cp acq2006.map   opkg/usr/local/
 cp acq2006.init opkg/usr/local/init
 

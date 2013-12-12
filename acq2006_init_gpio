@@ -36,14 +36,6 @@ mkln() {
 	fi
 }
 
-show_act() {
-	while [ 1 ]; do
-		setHI /dev/gpio/LED_ACT
-		sleep 0.5
-		setLO /dev/gpio/LED_ACT
-		sleep 0.5
-	done
-}
 
 i2c_reset() {
 	setHI /dev/gpio/I2C_RESET
@@ -58,7 +50,7 @@ export_gpio  0; setO gpio0
 export_gpio 47;
 
 mkln gpio0 LED_ACT
-show_act &
+nice daemon /usr/local/bin/heartbeat
 
 #export_gpio  9; setO gpio9
 #mkln gpio9 I2C_RESET AL
