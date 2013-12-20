@@ -27,7 +27,7 @@ squish() {
 	echo $1 | tr -d \  
 }
 
-if [ "$setget" = "get" ]; then
+getvalue() {
 	BITS=$(cat /dev/gpio/CLK/*OE)
 	BITS=$(squish $BITS)
 	case $BITS in
@@ -36,11 +36,17 @@ if [ "$setget" = "get" ]; then
 	$(squish $OFF)) 	echo 0 > $PF/FPMUX; echo off;;
 	*)	 		echo ERROR;;
 	esac
+}
+
+
+if [ "$setget" = "get" -o "$1" = "" ]; then
+	getvalue
 else
 	case $1 in
 	fpclk)	echo 2 > $PF/FPMUX; doit $FPCLK;;
 	xclk) 	echo 1 > $PF/FPMUX; doit $XCLK;;
-	*)	echo 0 > $PF/FPMUX; doit $OFF;;
+	off)	echo 0 > $PF/FPMUX; doit $OFF;;
+	*)	echo ERROR bad argument \"$1\";;
 	esac
-fi	
+fi
 
