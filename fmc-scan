@@ -1,5 +1,8 @@
 #!/bin/sh
 
+if [ -d /dev/sites ]; then
+	exit 0
+fi
 mkdir -p /dev/sites
 
 for PRD in /dev/gpio/*present
@@ -24,20 +27,167 @@ aappend() {
 	esac
 }
 
+get_fpga_spec() {
+#generated from filename   : ACQ2006_TOP_02_02_ff_ff_ff_40
+# pick out the filename and remove leading _ (then mismatches are by site#)
+	xiloader $1 | grep generated | awk '{ print $5 }' | sed -e 's/_//'
+}
 
 let site_count=0
+MTYPES=""
+
+#acq2006_006> cat /dev/sites/5/details 
+#FRU_MAN="D-TACQ Solutions"
+#FRU_PROD_NAME="AO421ELF"
+#FRU_SERIAL="E42100001"
+#FRU_PART_NUM="AO421ELF"
+# and the new ones
+#M=f0
+#N=40
+
+decode_fru_success=0
+
+decode_fru() {
+	
+	site=$1
+	details=$2
+	sdir=/etc/acq400/$site
+	
+	mkdir -p $sdir
+	echo -n "++ decode FRU EEPROM site $site "
+
+	FRU_MAN=xx
+	FRU_PROD_NAME=xx
+	FRU_SERIAL=xx
+	FRU_PART_NUM=xx
+	FRU_MTYPE=xx
+	FRU_NCHAN=xx
+	M=x
+	N=x		
+		
+	nchan=4
+	source $details
+	mn=$(echo $FRU_PART_NUM | cut -d\  -f 2-  )
+	if [ "$mn" != "$FRU_PART_NUM" ]; then
+#		echo FRU_PART_NUM \"$FRU_PART_NUM\" \"$mn\"
+		eval $mn
+	fi
+	
+	if [ "$N" = "x" -o "M" = "x" ]; then
+		decode_fru_success=0
+		echo ERROR: obsolete EEPROM please contact D-TACQ for update
+		return		
+	fi
+	
+	echo $N > $sdir/NCHAN
+	echo $M > $sdir/MTYPE
+	echo $FRU_SERIAL > $sdir/SERIAL
+	echo "$FRU_MAN" > $sdir/MANUFACTURER	
+	echo $FRU_PART_NUM > $sdir/PART_NUM
+	
+	_IFS=$IFS
+	IFS='-'
+	let ii=0
+	for field in $FRU_PART_NUM
+	do
+#		echo decode FRU_PART_NUM: $FRU_PART_NUM: ii $ii field $field
+		case $ii in
+		0) echo $field > $sdir/MODEL;;
+		1) nchan=$(echo $field | sed -e 's/[^0-9]//g')		
+		   echo $nchan  > $sdir/NCHAN;;
+		2) echo $field > $sdir/MAXRATE;;
+		3) echo $field > $sdir/RESOLUTION;;
+		esac
+		let ii=$ii+1
+		if [ $ii -eq 2 -a "$M" != "01" ]; then
+			# next fields valid ACQ420 only
+			break;
+		fi
+	done
+	IFS=$_IFS			
+
+	grep -q FRU_PROD_NAME $details
+	if [ $? -eq 0 ]; then
+		decode_fru_success=1
+		echo OK;
+	else
+		echo FAIL;
+	fi
+}
+
+good_sites=""
 
 for sd in /dev/sites/*
 do
 	site=$(basename $sd)
 	SITES=$(aappend $SITES $site)
 	fru-dump-acq ${sd}/eeprom > ${sd}/details
-	grep -q FRU_PROD_NAME ${sd}/details
-	if [ $? -eq 0 ]; then
-		echo 0 >/dev/gpio/LED/FMC${site}_R
-		echo 1 >/dev/gpio/LED/FMC${site}_G
+	
+	decode_fru_success=0
+	decode_fru $site ${sd}/details
+	if [ $decode_fru_success -ne 0 ]; then
 		GOOD_SITES=$(aappend $GOOD_SITES $site)
+		good_sites="$good_sites $site"
 	fi
+done
+
+#echo SITES \"$SITES\"
+#echo GOOD_SITES \"$GOOD_SITES\"
+#echo good_sites \"$good_sites\"
+
+
+get_mtype()
+{
+	if [ -e /etc/acq400/$1/MTYPE ]; then
+		cat /etc/acq400/$1/MTYPE
+	else
+		echo ff
+	fi
+}
+
+# omit underscore
+ideal_fpga="ACQ2006TOP"
+
+for site in 1 2 3 4 5 6
+do
+	ideal_fpga="${ideal_fpga}_$(get_mtype $site)"
+done
+
+
+
+
+fpga_image_good=""
+
+test_compatible_bitfile() {
+	if [ -r $1 ]; then
+		echo +++ testing bitfile $1
+		fspec=$(get_fpga_spec $1)
+		is_compatible_bitfile $ideal_fpga $fspec
+		if [ $? -eq 0 ]; then
+			fpga_image_good=$1
+		fi
+	fi		
+}
+
+for file in /mnt/FPGA.bit /mnt/fpga.d/*.bit
+do
+	test_compatible_bitfile $file
+	if [ "$fpga_image_good" != "" ]; then
+		echo load FPGA $fpga_image_good
+		/bin/load.fpga $fpga_image_good
+		break
+	fi
+done	
+
+if [ "$fpga_image_good" = "" ]; then
+	echo ERROR: no valid FPGA image found, FPGA NOT LOADED
+	exit	
+fi 
+
+for site in $good_sites
+do	
+	set.sys /dev/gpio/LED/FMC${site}_R 0
+	set.sys /dev/gpio/LED/FMC${site}_G 1
 	let site_count=$site_count+1
 done
 
