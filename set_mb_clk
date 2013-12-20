@@ -3,6 +3,11 @@
 
 set MN "(\[0-9\]*)"
 
+proc report{message} {
+	set LOG	[open /dev/shm/mb_clock w]
+	puts $LOG $message
+	close $LOG
+}
 proc daemon {} {
 	global MN
 	while {1} {
@@ -20,18 +25,25 @@ proc daemon {} {
 	}
 }
 
-if {$argc == 1} {
-	set arg1 [lindex $argv 0]
-	if {$arg1 == "-d"} {
-		set timeout -1
-		daemon
-		return 0
-	} else {
-		puts "Usage: set_mb_clk -d"
-		return 1
+# @@todo is daemon mode ever used?. Can we dump it?
+
+if {$argv0 = "set_mb_clock" } {
+	if {$argc == 1} {
+		set arg1 [lindex $argv 0]
+		if {$arg1 == "-d"} {
+			set timeout -1
+			daemon
+			return 0
+		} else {
+			puts "Usage: set_mb_clk -d"
+			return 1
+		}
 	}
 }
-if {$argc != 2} {
+if {$argc == 0} {
+	exec cat /dev/shm/mb_clock
+	return 0
+} elseif {$argc != 2} {
 	puts "Usage: set_mb_clk fin_kHz fout_kHz"
 	return 1
 }
@@ -40,13 +52,16 @@ set FIN  [lindex $argv 0]
 set FOUT [lindex $argv 1]
 
 
+
 spawn ob_calc_527 -o - --fin $FIN $FOUT
 expect {
 	-re "^$MN $MN $MN $MN $MN $MN" {
 		puts "Success S:$expect_out(1,string) A:$expect_out(2,string)"
+		report "$FIN $FOUT"
 	}
 	-re "(.*)\n" {
 		puts "Error: $expect_out(1,string)"
+		report "ERROR"
 		return 1
 	}
 }
