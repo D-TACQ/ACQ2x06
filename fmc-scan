@@ -1,6 +1,15 @@
 #!/bin/sh
 
+if [ "$FMC_SCAN_FPGA" = "" ]; then
+	echo ERROR: FMC_SCAN_FPGA not set
+	exit 1
+fi
+if [ "$FMC_SCAN_SITES" = "" ]; then
+	echo ERROR: FMC_SCAN_SITES not set
+	exit 1
+fi
 if [ -d /dev/sites ]; then
+	echo /dev/sites exists, looks like the scan has already completed
 	exit 0
 fi
 mkdir -p /dev/sites
@@ -146,9 +155,9 @@ get_mtype()
 }
 
 # omit underscore
-ideal_fpga="ACQ2006TOP"
+ideal_fpga=$FMC_SCAN_FPGA
 
-for site in 1 2 3 4 5 6
+for site in $FMC_SCAN_SITES
 do
 	ideal_fpga="${ideal_fpga}_$(get_mtype $site)"
 done
