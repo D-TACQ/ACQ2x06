@@ -3,7 +3,10 @@
 DC=$(date +%y%m%d%H%M%S)
 SEQ=05
 
-mkdir -p opkg/usr/local/bin
+TOP=..
+
+rm -Rf opkg/*
+mkdir -p opkg/usr/local/bin opkg/usr/local/init opkg/usr/local/lib/modules
 
 
 KO="./drivers/gpio/gpio-lp3943.ko\
@@ -15,7 +18,7 @@ KO="./drivers/gpio/gpio-lp3943.ko\
 
 for ko in $KO
 do
-	cp ../../linux-xlnx/$ko opkg/usr/local/lib/modules
+	cp ${TOP}/linux-xlnx/$ko opkg/usr/local/lib/modules
 done
 
 cp acq2006_init_gpio  is_compatible_bitfile fmc-scan  fru-dump-acq  \
@@ -23,11 +26,11 @@ cp acq2006_init_gpio  is_compatible_bitfile fmc-scan  fru-dump-acq  \
 cp acq2006.map   opkg/usr/local/
 cp acq2006.init opkg/usr/local/init
 
-cp -a ../../UTILS/ob_calc_527 set_mb_clk mb_clk *.fpmux opkg/usr/local/bin
+cp -a ${TOP}/UTILS/ob_calc_527 set_mb_clk mb_clk *.fpmux opkg/usr/local/bin
 
 tar czf release/${SEQ}-acq2006-${DC}.tgz -C opkg .
-rm -Rf ../../PACKAGES/${SEQ}-acq2006*
+rm -Rf ${TOP}/PACKAGES/${SEQ}-acq2006*
 cp release/${SEQ}-acq2006-${DC}.tgz REL
-cp release/${SEQ}-acq2006-${DC}.tgz ../../PACKAGES/
-echo cp release/${SEQ}-acq2006-${DC}.tgz ../../PACKAGES/
+cp release/${SEQ}-acq2006-${DC}.tgz ${TOP}/PACKAGES/
+echo cp release/${SEQ}-acq2006-${DC}.tgz ${TOP}/PACKAGES/
 

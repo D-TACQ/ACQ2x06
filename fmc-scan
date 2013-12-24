@@ -39,7 +39,7 @@ aappend() {
 get_fpga_spec() {
 #generated from filename   : ACQ2006_TOP_02_02_ff_ff_ff_40
 # pick out the filename and remove leading _ (then mismatches are by site#)
-	xiloader $1 | grep generated | awk '{ print $5 }' | sed -e 's/_//'
+	xiloader $* 2>&1 | grep generated | awk '{ print $5 }' | sed -e 's/_//'
 }
 
 let site_count=0
@@ -154,8 +154,11 @@ get_mtype()
 	fi
 }
 
+is_gzip_file() {
+	echo $1 | grep -q \.gz$
+}
 # omit underscore
-ideal_fpga=$FMC_SCAN_FPGA
+ideal_fpga=${FMC_SCAN_FPGA}TOP
 
 for site in $FMC_SCAN_SITES
 do
@@ -169,8 +172,13 @@ fpga_image_good=""
 
 test_compatible_bitfile() {
 	if [ -r $1 ]; then
-		echo +++ testing bitfile $1
-		fspec=$(get_fpga_spec $1)
+		echo +++ testing bitfile $1 $(is_gzip_file $1)		
+		is_gzip_file $1
+		if [ $? -eq 0 ]; then
+			fspec=$(gunzip -c $1 | get_fpga_spec -i -)
+		else
+			fspec=$(get_fpga_spec $1)
+		fi
 		is_compatible_bitfile $ideal_fpga $fspec
 		if [ $? -eq 0 ]; then
 			fpga_image_good=$1
@@ -178,12 +186,23 @@ test_compatible_bitfile() {
 	fi		
 }
 
-for file in /mnt/FPGA.bit /mnt/fpga.d/*.bit
+for file in /mnt/FPGA.bit /mnt/fpga.d/*.bit*
 do
 	test_compatible_bitfile $file
 	if [ "$fpga_image_good" != "" ]; then
 		echo load FPGA $fpga_image_good
-		/bin/load.fpga $fpga_image_good
+		echo load.fpga loaded $fpga_image_good >/tmp/fpga_status
+		is_gzip_file $fpga_image_good
+		if [ $? -eq 0 ]; then
+			gunzip -c $fpga_image_good | \
+				/bin/xiloader -L 2>>/tmp/fpga_status
+		else
+			/bin/xiloader -L $fpga_image_good 2>>/tmp/fpga_status
+		fi
+		if [ $? -ne 0 ]; then
+			echo "ERROR FPGA load failed launch emergency shell"
+			/bin/sh
+		fi	
 		break
 	fi
 done	
