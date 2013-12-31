@@ -26,11 +26,11 @@ cp acq2006_init_gpio  load.milo opkg/usr/local/bin
 cp acq2006.map   opkg/usr/local/
 cp acq2006.init opkg/usr/local/init
 
-cp -a ${TOP}/UTILS/ob_calc_527 set_mb_clk mb_clk *.fpmux opkg/usr/local/bin
+cp -a ${TOP}/UTILS/ob_calc_527 opkg/usr/local/bin
 
 tar czf release/${SEQ}-acq2006-${DC}.tgz -C opkg .
 rm -Rf ${TOP}/PACKAGES/${SEQ}-acq2006*
 cp release/${SEQ}-acq2006-${DC}.tgz REL
 cp release/${SEQ}-acq2006-${DC}.tgz ${TOP}/PACKAGES/
-echo cp release/${SEQ}-acq2006-${DC}.tgz ${TOP}/PACKAGES/
+echo DONE: cp release/${SEQ}-acq2006-${DC}.tgz ${TOP}/PACKAGES/ 
 
