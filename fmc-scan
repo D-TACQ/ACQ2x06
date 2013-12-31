@@ -122,6 +122,8 @@ decode_fru() {
 	else
 		echo FAIL;
 	fi
+
+	chmod 444 ${sdir}/*
 }
 
 good_sites=""
