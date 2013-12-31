@@ -101,9 +101,9 @@ decode_fru() {
 	do
 #		echo decode FRU_PART_NUM: $FRU_PART_NUM: ii $ii field $field
 		case $ii in
-		0) echo $field > $sdir/MODEL;;
+		0) [ -e $sdir/MODEL ] || echo $field > $sdir/MODEL;;
 		1) nchan=$(echo $field | sed -e 's/[^0-9]//g')		
-		   echo $nchan  > $sdir/NCHAN;;
+		   [ -e $sdir/NCHAN ] || echo $nchan  > $sdir/NCHAN;;
 		2) echo $field > $sdir/MAXRATE;;
 		3) echo $field > $sdir/RESOLUTION;;
 		esac
