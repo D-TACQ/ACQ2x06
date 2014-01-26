@@ -22,7 +22,6 @@ do
 done
 
 cp load.milo opkg/usr/local/bin
-cp ${TOP}/ACQ2006/SHARE/bin/* opkg/usr/local/bin
 cp ${MODEL}_init_gpio opkg/usr/local/bin
 cp ${MODEL}.map   opkg/usr/local/
 cp ${MODEL}.init opkg/usr/local/init
