@@ -1,0 +1,286 @@
+#!/bin/sh
+
+mkdir -p /dev/gpio
+cd /sys/class/gpio
+
+export_gpio() {
+	echo $1 > export
+}
+
+getchip() {
+	addr=$1
+	ls -l gpiochip* | grep $addr | awk '{ print $9 }'
+}
+
+setHI() {
+	echo 1 > $1
+}
+
+setLO() {
+	echo 0 > $1
+}
+
+setO() {
+	echo out >$1/direction
+}
+setAL() {
+	echo 1 >$1/active_low
+	if [ "$(cat $1/direction)" = "out" ]; then
+		echo 0 >$1/value
+	fi
+}
+mkln() {
+	ln -s $PWD/$1/value /dev/gpio/$2
+	if [ "x$3" = "xAL" ]; then
+		setAL $1
+	fi
+}
+
+
+i2c_reset() {
+	setHI /dev/gpio/I2C_RESET
+	sleep 0.1
+	setLO /dev/gpio/I2C_RESET
+	echo +++ I2C_RESET done
+}
+
+
+# Zynq GPIO
+export_gpio  0; setO gpio0
+export_gpio 47;
+
+#mkln gpio0 LED_ACT
+mkln gpio0 I2C_RESET	AL
+mkln gpio47 EXT_WP AL
+
+
+
+
+CHIP1=$(basename $(echo /sys/bus/i2c/devices/1-0023/gpio/gpiochip*))
+CHIP2=$(basename $(echo /sys/bus/i2c/devices/1-0022/gpio/gpiochip*))
+
+
+let pin00=${CHIP1#gpiochip*}
+let pin10=${CHIP2#gpiochip*}
+let pin01=$pin00+23
+let pin11=$pin10+23
+
+echo +++ gpiochip 1-0022 $CHIP1 gpio $pin00 $pin01
+echo +++ gpiochip 2-0023 $CHIP2 gpio $pin10 $pin11
+
+mkdir -p /dev/gpio/CHIP1
+
+let ix=0
+for pin in $(seq $pin00 $pin01) 
+do
+	PN=$(printf P%02o $ix)
+	export_gpio $pin
+	ln -s /sys/class/gpio/gpio$pin /dev/gpio/CHIP1/$PN
+	let ix=$ix+1
+done	
+
+mkdir -p /dev/gpio/CHIP2
+
+let ix=0
+for pin in $(seq $pin10 $pin11)
+do
+	PN=$(printf P%02o $ix)
+	export_gpio $pin
+	ln -s /sys/class/gpio/gpio$pin /dev/gpio/CHIP2/$PN 
+	let ix=$ix+1
+done
+
+let pin_out00=$pin00		;# P00	
+let pin_out01=$pin00+20		;# P24
+
+let pin_out10=$pin10+8		;# P10 
+let pin_out11=$pin10+19		;# P23
+
+for pin in $(seq $pin_out00 $pin_out01) $(seq $pin_out10 $pin_out11)
+do	
+	setO  gpio$pin	
+done
+
+nice daemon /usr/local/bin/heartbeat
+# i2c gpio 
+
+lnAL() {
+	setAL $1;ln -s $1/value $2	
+}
+
+mkdir -p /dev/gpio/CLK/MB/RDW
+ln -s /dev/gpio/CHIP1/P00/value /dev/gpio/CLK/MB/RDW/R0
+ln -s /dev/gpio/CHIP1/P01/value /dev/gpio/CLK/MB/RDW/R1
+ln -s /dev/gpio/CHIP1/P02/value /dev/gpio/CLK/MB/RDW/R2
+ln -s /dev/gpio/CHIP1/P03/value /dev/gpio/CLK/MB/RDW/R3
+ln -s /dev/gpio/CHIP1/P04/value /dev/gpio/CLK/MB/RDW/R4
+ln -s /dev/gpio/CHIP1/P05/value /dev/gpio/CLK/MB/RDW/R5
+ln -s /dev/gpio/CHIP1/P06/value /dev/gpio/CLK/MB/RDW/R6
+mkdir -p /dev/gpio/CLK/MB/FDW
+ln -s /dev/gpio/CHIP1/P07/value /dev/gpio/CLK/MB/FDW/F0
+ln -s /dev/gpio/CHIP1/P10/value /dev/gpio/CLK/MB/FDW/F1
+ln -s /dev/gpio/CHIP1/P11/value /dev/gpio/CLK/MB/FDW/F2
+ln -s /dev/gpio/CHIP1/P12/value /dev/gpio/CLK/MB/FDW/F3
+ln -s /dev/gpio/CHIP1/P13/value /dev/gpio/CLK/MB/FDW/F4
+ln -s /dev/gpio/CHIP1/P14/value /dev/gpio/CLK/MB/FDW/F5
+ln -s /dev/gpio/CHIP1/P15/value /dev/gpio/CLK/MB/FDW/F6
+mkdir -p /dev/gpio/CLK/MB/ODW
+ln -s /dev/gpio/CHIP1/P16/value /dev/gpio/CLK/MB/ODW/S0
+ln -s /dev/gpio/CHIP1/P17/value /dev/gpio/CLK/MB/ODW/S1
+
+ln -s /dev/gpio/CHIP1/P20/value /dev/gpio/FP_TRIG_DIR_OUT
+ln -s /dev/gpio/CHIP1/P21/value /dev/gpio/FP_SYNC_DIR_OUT
+ln -s /dev/gpio/CHIP1/P22/value /dev/gpio/FP_IO_DIR_OUT
+ln -s /dev/gpio/CHIP1/P23/value /dev/gpio/SYNC_IN_GPIO_OUT
+ln -s /dev/gpio/CHIP1/P24/value /dev/gpio/SYNC_OUT_GPIO_OUT
+
+lnAL  /dev/gpio/CHIP1/P25	/dev/gpio/SYNC_CABLE_DET
+ 
+
+
+for px in 0 1 2 3 4 5
+do
+	pin=$(printf P%02d $px)
+	let site=$px+1
+	lnAL /dev/gpio/CHIP2/$pin /dev/gpio/fmc${site}_present	
+done
+
+lnAL /dev/gpio/CHIP2/P06 	/dev/gpio/15VP_PGD
+lnAL /dev/gpio/CHIP2/P07	/dev/gpio/15VN_PGD
+
+lnAL /dev/gpio/CHIP2/P10	/dev/gpio/CLK/ZCLK_OE
+lnAL /dev/gpio/CHIP2/P11	/dev/gpio/CLK/MCLK2_OE
+lnAL /dev/gpio/CHIP2/P12	/dev/gpio/CLK/OSC_X_OE
+lnAL /dev/gpio/CHIP2/P13	/dev/gpio/CLK/OSC_X_CLK_OE
+lnAL /dev/gpio/CHIP2/P14	/dev/gpio/CLK/FP_CLK_OE
+lnAL /dev/gpio/CHIP2/P15	/dev/gpio/CLK/FP_OE
+lnAL /dev/gpio/CHIP2/P16	/dev/gpio/CLK/Si570_OE
+lnAL /dev/gpio/CHIP2/P17	/dev/gpio/CLK/15VA_EN
+
+mkdir -p /dev/gpio/LED
+lnAL /dev/gpio/CHIP2/P20	/dev/gpio/LED/CLK_G
+lnAL /dev/gpio/CHIP2/P21	/dev/gpio/LED/CLK_R
+lnAL /dev/gpio/CHIP2/P22	/dev/gpio/LED/TRG_G
+lnAL /dev/gpio/CHIP2/P23	/dev/gpio/LED/TRG_R
+
+ln -s /dev/gpio/CHIP2/P24	/dev/gpio/IS_EE
+ln -s /dev/gpio/CHIP2/P25	/dev/gpio/IS_REVB	;# REVA not likely
+
+
+
+# LP3943ISQ
+
+LEDSCHIP=$(getchip 1-0060)
+if [ $? -ne 0 ]; then
+	echo +++ ERROR: LEDSCHIP NOT FOUND
+else
+	echo +++ LEDSCHIP FOUND $LEDSCHIP
+fi
+let LED0=${LEDSCHIP#gpiochip*}
+let LED1=$LED0+14
+
+gpioLED() {
+	let lgp=$LED0+$1
+	echo gpio$lgp
+}
+
+for pin in $(seq $LED0 $LED1)
+do
+	export_gpio $pin
+	setO gpio${pin}
+done
+
+mkln $(gpioLED  0) FAN_EN 
+set.sys /dev/gpio/FAN_EN 0
+set.sys /sys/class/pwm/pwmchip0/pwm0/polarity inversed
+set.sys /sys/class/pwm/pwmchip0/pwm0/period 100000
+set.sys /sys/class/pwm/pwmchip0/pwm0/duty_cycle 50000
+set.sys /sys/class/pwm/pwmchip0/pwm0/enable 1
+
+cat - >/usr/local/bin/set.fanspeed <<EOF
+#!/bin/sh
+# set fanspeed acq2006 style
+FSPERCENT=\${1:-50}
+let DC="\$FSPERCENT*1000"
+set.sys /sys/class/pwm/pwmchip0/pwm0/duty_cycle \$DC
+EOF
+chmod a+rx /usr/local/bin/set.fanspeed
+echo /usr/local/bin/set.fanspeed created
+
+mkln $(gpioLED  1) LED/FMC1_G 	AL
+mkln $(gpioLED  2) LED/FMC2_G 	AL
+mkln $(gpioLED  3) LED/FMC3_G	AL
+mkln $(gpioLED  4) LED/FMC4_G 	AL
+mkln $(gpioLED  5) LED/FMC5_G 	AL
+mkln $(gpioLED  6) LED/FMC6_G 	AL
+mkln $(gpioLED  7) LED/FMC1_R 	AL
+mkln $(gpioLED  8) LED/FMC2_R 	AL
+mkln $(gpioLED  9) LED/FMC3_R 	AL
+mkln $(gpioLED 10) LED/FMC4_R 	AL
+mkln $(gpioLED 11) LED/FMC5_R 	AL
+mkln $(gpioLED 12) LED/FMC6_R 	AL
+mkln $(gpioLED 13) LED/ACT_G  	AL
+mkln $(gpioLED 14) LED/ACT_R  	AL
+	
+clear_leds() {	
+	for LED in /dev/gpio/LED/*
+	do
+		echo 0 > $LED
+	done
+}
+
+test_leds() {
+	for LED in /dev/gpio/LED/*
+	do
+		setHI $LED
+		sleep 0.2
+		setLO $LED
+	done
+}
+	
+	
+clear_leds
+echo "++ lamp test"
+test_leds
+
+
+# OK, this isn't gpio, but it's handy to put it here:
+
+mkdir -p /dev/hwmon
+
+for S in 0 1 2 3 4 5 6 7
+do
+	SRC=/sys/class/hwmon/hwmon${S}/device
+	if [ -e ${SRC}/temp ]; then
+		ID=Z
+	elif [ -e ${SRC}/temp1_input ]; then
+		ID=$S	
+	else
+		continue;
+	fi
+	DST=/dev/hwmon/${ID}
+	mkdir $DST
+	
+	case ${ID} in
+	Z)
+		for xx in temp v v_mode vccaux vccbram vccint
+		do
+			ln -s ${SRC}/${xx} ${DST}/${xx}
+		done;;			
+	0)
+		ln -s ${SRC}/temp1_input ${DST}/temp
+		ln -s ${SRC}/in1_input	 ${DST}/15VA_N
+		ln -s ${SRC}/in2_input	 ${DST}/15VA_P
+		ln -s ${SRC}/in3_input	 ${DST}/5V_P
+		ln -s ${SRC}/in4_input	 ${DST}/VADJ;;
+	*)
+		ln -s ${SRC}/temp1_input ${DST}/temp
+		for xx in in1_input in2_input in3_input in4_input
+		do
+			ln -s ${SRC}/${xx} ${DST}/${xx%*_input}
+		done;;
+	esac					
+done
+
+echo "++ acq2006b_init_gpio done"
+
