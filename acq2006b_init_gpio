@@ -56,8 +56,8 @@ mkln gpio47 EXT_WP AL
 
 
 
-CHIP1=$(basename $(echo /sys/bus/i2c/devices/1-0023/gpio/gpiochip*))
-CHIP2=$(basename $(echo /sys/bus/i2c/devices/1-0022/gpio/gpiochip*))
+CHIP1=$(basename $(echo /sys/bus/i2c/devices/1-0022/gpio/gpiochip*))
+CHIP2=$(basename $(echo /sys/bus/i2c/devices/1-0023/gpio/gpiochip*))
 
 
 let pin00=${CHIP1#gpiochip*}
