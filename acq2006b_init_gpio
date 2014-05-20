@@ -107,6 +107,9 @@ nice daemon /usr/local/bin/heartbeat
 lnAL() {
 	setAL $1;ln -s $1/value $2	
 }
+lnAH() {
+	ln -s $1/value $2	
+}
 
 mkdir -p /dev/gpio/CLK/MB/RDW
 ln -s /dev/gpio/CHIP1/P00/value /dev/gpio/CLK/MB/RDW/R0
@@ -155,7 +158,7 @@ lnAL /dev/gpio/CHIP2/P13	/dev/gpio/CLK/OSC_X_CLK_OE
 lnAL /dev/gpio/CHIP2/P14	/dev/gpio/CLK/FP_CLK_OE
 lnAL /dev/gpio/CHIP2/P15	/dev/gpio/CLK/FP_OE
 lnAL /dev/gpio/CHIP2/P16	/dev/gpio/CLK/Si570_OE
-lnAL /dev/gpio/CHIP2/P17	/dev/gpio/CLK/15VA_EN
+lnAL /dev/gpio/CHIP2/P17	/dev/gpio/15VA_EN
 
 mkdir -p /dev/gpio/LED
 lnAL /dev/gpio/CHIP2/P20	/dev/gpio/LED/CLK_G
@@ -163,8 +166,8 @@ lnAL /dev/gpio/CHIP2/P21	/dev/gpio/LED/CLK_R
 lnAL /dev/gpio/CHIP2/P22	/dev/gpio/LED/TRG_G
 lnAL /dev/gpio/CHIP2/P23	/dev/gpio/LED/TRG_R
 
-ln -s /dev/gpio/CHIP2/P24	/dev/gpio/IS_EE
-ln -s /dev/gpio/CHIP2/P25	/dev/gpio/IS_REVB	;# REVA not likely
+lnAH /dev/gpio/CHIP2/P24/	/dev/gpio/IS_EE
+lnAL /dev/gpio/CHIP2/P25	/dev/gpio/IS_REVB	;# REVA not likely
 
 
 
@@ -221,6 +224,8 @@ mkln $(gpioLED 11) LED/FMC5_R 	AL
 mkln $(gpioLED 12) LED/FMC6_R 	AL
 mkln $(gpioLED 13) LED/ACT_G  	AL
 mkln $(gpioLED 14) LED/ACT_R  	AL
+
+ln -s /dev/gpio/LED/ACT_G /dev/gpio/LED_ACT
 	
 clear_leds() {	
 	for LED in /dev/gpio/LED/*
