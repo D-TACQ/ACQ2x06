@@ -2,6 +2,9 @@
 
 /usr/local/bin/load.milo
 /sbin/insmod /usr/local/lib/modules/isl22313.ko
+mkdir -p /dev/acq2006/
+ln -s /sys/bus/i2c/devices/1-0050/wiper /dev/acq2006/vap
+ln -s /sys/bus/i2c/devices/1-0051/wiper /dev/acq2006/van
 /usr/local/bin/acq2006b_init_gpio
 FMC_SCAN_FPGA=ACQ2006B FMC_SCAN_SITES="1 2 3 4 5 6" /usr/local/bin/fmc-scan
 
