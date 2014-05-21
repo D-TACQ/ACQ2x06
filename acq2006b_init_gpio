@@ -47,10 +47,15 @@ i2c_reset() {
 
 # Zynq GPIO
 export_gpio  0; setO gpio0
-export_gpio 47;
+mkln gpio0 LED_ACT
+nice daemon /usr/local/bin/heartbeat
 
-#mkln gpio0 LED_ACT
-mkln gpio0 I2C_RESET	AL
+
+# I2C_RESET : use with care, will confuse the ps7 i2c driver
+export_gpio 9; setO gpio9
+mkln gpio9 I2C_RESET	AL
+
+export_gpio 47;	
 mkln gpio47 EXT_WP AL
 
 
@@ -225,7 +230,6 @@ mkln $(gpioLED 12) LED/FMC6_R 	AL
 mkln $(gpioLED 13) LED/ACT_G  	AL
 mkln $(gpioLED 14) LED/ACT_R  	AL
 
-ln -s /dev/gpio/LED/ACT_G /dev/gpio/LED_ACT
 	
 clear_leds() {	
 	for LED in /dev/gpio/LED/*
