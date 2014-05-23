@@ -36,6 +36,17 @@ mkln() {
 	fi
 }
 
+lnAL() {
+	setAL $1;ln -s $1/value $2	
+}
+
+lnALO() {
+	setAL $1; echo 0 >$1/value; ln -s $1/value $2	
+}
+
+lnAH() {
+	ln -s $1/value $2	
+}
 
 i2c_reset() {
 	setHI /dev/gpio/I2C_RESET
@@ -109,12 +120,7 @@ done
 nice daemon /usr/local/bin/heartbeat
 # i2c gpio 
 
-lnAL() {
-	setAL $1;ln -s $1/value $2	
-}
-lnAH() {
-	ln -s $1/value $2	
-}
+
 
 mkdir -p /dev/gpio/CLK/MB/RDW
 ln -s /dev/gpio/CHIP1/P00/value /dev/gpio/CLK/MB/RDW/R0
@@ -156,20 +162,20 @@ done
 lnAL /dev/gpio/CHIP2/P06 	/dev/gpio/15VP_PGD
 lnAL /dev/gpio/CHIP2/P07	/dev/gpio/15VN_PGD
 
-lnAL /dev/gpio/CHIP2/P10	/dev/gpio/CLK/ZCLK_OE
-lnAL /dev/gpio/CHIP2/P11	/dev/gpio/CLK/MCLK2_OE
-lnAL /dev/gpio/CHIP2/P12	/dev/gpio/CLK/OSC_X_OE
-lnAL /dev/gpio/CHIP2/P13	/dev/gpio/CLK/OSC_X_CLK_OE
-lnAL /dev/gpio/CHIP2/P14	/dev/gpio/CLK/FP_CLK_OE
-lnAL /dev/gpio/CHIP2/P15	/dev/gpio/CLK/FP_OE
-lnAL /dev/gpio/CHIP2/P16	/dev/gpio/CLK/Si570_OE
-lnAL /dev/gpio/CHIP2/P17	/dev/gpio/15VA_EN
+lnALO /dev/gpio/CHIP2/P10	/dev/gpio/CLK/ZCLK_OE
+lnALO /dev/gpio/CHIP2/P11	/dev/gpio/CLK/MCLK2_OE
+lnALO /dev/gpio/CHIP2/P12	/dev/gpio/CLK/OSC_X_OE
+lnALO /dev/gpio/CHIP2/P13	/dev/gpio/CLK/OSC_X_CLK_OE
+lnALO /dev/gpio/CHIP2/P14	/dev/gpio/CLK/FP_CLK_OE
+lnALO /dev/gpio/CHIP2/P15	/dev/gpio/CLK/FP_OE
+lnALO /dev/gpio/CHIP2/P16	/dev/gpio/CLK/Si570_OE
+lnALO /dev/gpio/CHIP2/P17	/dev/gpio/15VA_EN
 
 mkdir -p /dev/gpio/LED
-lnAL /dev/gpio/CHIP2/P20	/dev/gpio/LED/CLK_G
-lnAL /dev/gpio/CHIP2/P21	/dev/gpio/LED/CLK_R
-lnAL /dev/gpio/CHIP2/P22	/dev/gpio/LED/TRG_G
-lnAL /dev/gpio/CHIP2/P23	/dev/gpio/LED/TRG_R
+lnALO /dev/gpio/CHIP2/P20	/dev/gpio/LED/CLK_G
+lnALO /dev/gpio/CHIP2/P21	/dev/gpio/LED/CLK_R
+lnALO /dev/gpio/CHIP2/P22	/dev/gpio/LED/TRG_G
+lnALO /dev/gpio/CHIP2/P23	/dev/gpio/LED/TRG_R
 
 lnAH /dev/gpio/CHIP2/P24/	/dev/gpio/IS_EE
 lnAL /dev/gpio/CHIP2/P25	/dev/gpio/IS_REVB	;# REVA not likely

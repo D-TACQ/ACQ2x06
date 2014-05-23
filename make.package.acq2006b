@@ -14,7 +14,7 @@ KO="./drivers/gpio/gpio-lp3943.ko\
 	./drivers/mfd/mfd-core.ko\
 	./drivers/pwm/pwm-lp3943.ko\
 	./drivers/base/regmap/regmap-i2c.ko \
-	../DRIVERS/ISL22317/isl22317/isl22313.ko"
+	./drivers/misc/isl22313.ko"
 
 
 for ko in $KO
