@@ -36,6 +36,17 @@ mkln() {
 	fi
 }
 
+lnAL() {
+	setAL $1;ln -s $1/value $2	
+}
+
+lnALO() {
+	setAL $1; echo 0 >$1/value; ln -s $1/value $2	
+}
+
+lnAH() {
+	ln -s $1/value $2	
+}
 
 i2c_reset() {
 	setHI /dev/gpio/I2C_RESET
@@ -44,6 +55,20 @@ i2c_reset() {
 	echo +++ I2C_RESET done
 }
 
+mk_chip_layer8() {
+	chip=$1
+	pin00=$2
+	pin01=$3
+	mkdir -p /dev/gpio/$chip
+	let ix=0
+	for pin in $(seq $pin00 $pin01) 
+	do
+		pn=$(printf P%o $ix)
+		export_gpio $pin
+		ln -s /sys/class/gpio/gpio$pin /dev/gpio/$chip/$pn
+		let ix=$ix+1
+	done				
+}
 
 # Zynq GPIO
 export_gpio  0; setO gpio0
@@ -58,80 +83,114 @@ nice daemon /usr/local/bin/heartbeat
 
 mkln gpio47 EXT_WP AL
 
-
 # i2c gpio 
 
-for pin in $(seq 216 255)
-do
-	export_gpio $pin
-done
+
+CHIP20=$(basename $(echo /sys/bus/i2c/devices/1-0020/gpio/gpiochip*))
+CHIP21=$(basename $(echo /sys/bus/i2c/devices/1-0021/gpio/gpiochip*))
+CHIP22=$(basename $(echo /sys/bus/i2c/devices/1-0022/gpio/gpiochip*))
+CHIP23=$(basename $(echo /sys/bus/i2c/devices/1-0023/gpio/gpiochip*))
+CHIP24=$(basename $(echo /sys/bus/i2c/devices/1-0024/gpio/gpiochip*))
 
 
-for pin in $(seq 240 247) $(seq 232 239)
+let CHIP20_00=${CHIP20#gpiochip*}
+let CHIP21_00=${CHIP21#gpiochip*}
+let CHIP22_00=${CHIP22#gpiochip*}
+let CHIP23_00=${CHIP23#gpiochip*}
+let CHIP24_00=${CHIP24#gpiochip*}
+
+let CHIP20_01="$CHIP20_00+7"
+let CHIP21_01="$CHIP21_00+7"
+let CHIP22_01="$CHIP22_00+7"
+let CHIP23_01="$CHIP23_00+7"
+let CHIP24_01="$CHIP24_00+7"
+
+mk_chip_layer8 CHIP20 $CHIP20_00 $CHIP20_01
+mk_chip_layer8 CHIP21 $CHIP21_00 $CHIP21_01
+mk_chip_layer8 CHIP22 $CHIP22_00 $CHIP22_01
+mk_chip_layer8 CHIP23 $CHIP23_00 $CHIP23_01
+mk_chip_layer8 CHIP24 $CHIP24_00 $CHIP24_01
+
+
+for pin in $(seq $CHIP21_00 $CHIP21_01) $(seq $CHIP22_00 $CHIP22_01)
 do
 	setO gpio$pin
 done
 
+for gpio in /dev/gpio/CHIP2[12]/* 
+do
+	setO $gpio
+done
+
+# ICS CLK - MBCLK 
 
 mkdir -p /dev/gpio/CLK/MB/RDW
-mkln gpio240 CLK/MB/RDW/R6
-mkln gpio241 CLK/MB/RDW/R5
-mkln gpio242 CLK/MB/RDW/R4
-mkln gpio243 CLK/MB/RDW/R3
-mkln gpio244 CLK/MB/RDW/R2
-mkln gpio245 CLK/MB/RDW/R1
-mkln gpio246 CLK/MB/RDW/R0
-
-mkdir /dev/gpio/CLK/MB/FDW
-mkln gpio247 CLK/MB/FDW/F6
-mkln gpio232 CLK/MB/FDW/F5
-mkln gpio233 CLK/MB/FDW/F4
-mkln gpio234 CLK/MB/FDW/F3
-mkln gpio235 CLK/MB/FDW/F2
-mkln gpio236 CLK/MB/FDW/F1
-mkln gpio237 CLK/MB/FDW/F0
-
-mkdir /dev/gpio/CLK/MB/ODW
-mkln gpio238 CLK/MB/ODW/S1
-mkln gpio239 CLK/MB/ODW/S0
+lnAL /dev/gpio/CHIP21/P0 /dev/gpio/CLK/MB/RDW/R6
+lnAL /dev/gpio/CHIP21/P1 /dev/gpio/CLK/MB/RDW/R5
+lnAL /dev/gpio/CHIP21/P2 /dev/gpio/CLK/MB/RDW/R4
+lnAL /dev/gpio/CHIP21/P3 /dev/gpio/CLK/MB/RDW/R3
+lnAL /dev/gpio/CHIP21/P4 /dev/gpio/CLK/MB/RDW/R2
+lnAL /dev/gpio/CHIP21/P5 /dev/gpio/CLK/MB/RDW/R1
+lnAL /dev/gpio/CHIP21/P6 /dev/gpio/CLK/MB/RDW/R0
 
 
-let site=1; while [ $site -le 6 ]; do
-	let gpio=248+$site-1
-	GPIO=gpio${gpio}
-	setAL $GPIO; mkln ${GPIO} fmc${site}_present
-	let site=$site+1
-done
+mkdir -p /dev/gpio/CLK/MB/FDW
+lnAL /dev/gpio/CHIP21/P7 /dev/gpio/CLK/MB/FDW/F6
+lnAL /dev/gpio/CHIP22/P0 /dev/gpio/CLK/MB/FDW/F5
+lnAL /dev/gpio/CHIP22/P1 /dev/gpio/CLK/MB/FDW/F4
+lnAL /dev/gpio/CHIP22/P2 /dev/gpio/CLK/MB/FDW/F3
+lnAL /dev/gpio/CHIP22/P3 /dev/gpio/CLK/MB/FDW/F2
+lnAL /dev/gpio/CHIP22/P4 /dev/gpio/CLK/MB/FDW/F1
+lnAL /dev/gpio/CHIP22/P5 /dev/gpio/CLK/MB/FDW/F0
 
-mkln gpio254 15VP_PGD 		AL
-mkln gpio255 15VN_PGD 		AL
+mkdir -p /dev/gpio/CLK/MB/ODW
+lnAL /dev/gpio/CHIP22/P6 /dev/gpio/CLK/MB/ODW/S1
+lnAL /dev/gpio/CHIP22/P7 /dev/gpio/CLK/MB/ODW/S2
 
 
-for pin in $(seq 224 231) $(seq 216 219)
+# FMC PRESENT, Analog Power Good
+
+let pin=0
+for gpio in /dev/gpio/CHIP20/*
 do
-	setO gpio${pin}
+	setO $gpio
+	
+	case $pin in
+	6)	lnAL $gpio /dev/gpio/15VP_PGD;;
+	7)	lnAL $gpio /dev/gpio/15VN_PGD;;
+	*)	let site=$pin+1 
+		lnAL $gpio /dev/gpio/fmc${site}_present;;
+	esac
+	let pin="$pin+1"
 done
 
-mkln gpio224 CLK/MB/ICS_CLK2_OE
-mkln gpio225 CLK/OSC_X_OE 	AL
-mkln gpio226 CLK/OSC_X_CLK_OE	AL
-mkln gpio227 CLK/FP_CLK_OE 	AL
-mkln gpio228 CLK/FP_OE		AL
-mkln gpio229 Si570_OE
-mkln gpio230 15VA_EN		AL
-mkln gpio231 PSU_SYNC_CLK_OE
+
+for gpio in /dev/gpio/CHIP23/* /dev/gpio/CHIP24/P[0-3]
+do
+	setO $gpio
+done
+
+lnAH /dev/gpio/CHIP23/P0 /dev/gpio/CLK/MB/ICS_CLK2_OE
+lnAL /dev/gpio/CHIP23/P1 /dev/gpio/CLK/OSC_X_OE
+lnAL /dev/gpio/CHIP23/P2 /dev/gpio/CLK/OSC_X_CLK_OE
+lnAL /dev/gpio/CHIP23/P3 /dev/gpio/CLK/FP_CLK_OE
+lnAL /dev/gpio/CHIP23/P4 /dev/gpio/CLK/FP_OE
+lnAH /dev/gpio/CHIP23/P5 /dev/gpio/Si570_OE
+lnAL /dev/gpio/CHIP23/P6 /dev/gpio/15VA_EN
+lnAH /dev/gpio/CHIP23/P7 /dev/gpio/PSU_SYNC_CLK_OE
+
 
 mkdir -p /dev/gpio/LED
 # CLK TRG swapped pgm 20130928
-mkln gpio216 LED/TRG_G 		AL
-mkln gpio217 LED/TRG_R 		AL
-mkln gpio218 LED/CLK_G 		AL
-mkln gpio219 LED/CLK_R 		AL
+lnAL /dev/gpio/CHIP24/P0 /dev/gpio/LED/TRG_G
+lnAL /dev/gpio/CHIP24/P1 /dev/gpio/LED/TRG_R
+lnAL /dev/gpio/CHIP24/P2 /dev/gpio/LED/CLK_G
+lnAL /dev/gpio/CHIP24/P3 /dev/gpio/LED/CLK_R
 
-mkln gpio220 BV_EE
-mkln gpio221 BV_RSV1
-mkln gpio222 BV_RSV2
-mkln gpio223 JTAG14_ALL
+lnAH /dev/gpio/CHIP24/P4 /dev/gpio/BV_EE
+lnAH /dev/gpio/CHIP24/P5 /dev/gpio/BV_RSV1
+lnAH /dev/gpio/CHIP24/P6 /dev/gpio/BV_RSV2
+lnAH /dev/gpio/CHIP24/P7 /dev/gpio/JTAG14_ALL
 
 # LP3943ISQ
 
