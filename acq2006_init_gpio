@@ -60,27 +60,27 @@ done
 # ICS CLK - MBCLK 
 
 mkdir -p /dev/gpio/CLK/MB/RDW
-lnAL /dev/gpio/CHIP21/P0 /dev/gpio/CLK/MB/RDW/R6
-lnAL /dev/gpio/CHIP21/P1 /dev/gpio/CLK/MB/RDW/R5
-lnAL /dev/gpio/CHIP21/P2 /dev/gpio/CLK/MB/RDW/R4
-lnAL /dev/gpio/CHIP21/P3 /dev/gpio/CLK/MB/RDW/R3
-lnAL /dev/gpio/CHIP21/P4 /dev/gpio/CLK/MB/RDW/R2
-lnAL /dev/gpio/CHIP21/P5 /dev/gpio/CLK/MB/RDW/R1
-lnAL /dev/gpio/CHIP21/P6 /dev/gpio/CLK/MB/RDW/R0
+lnAH /dev/gpio/CHIP21/P0 /dev/gpio/CLK/MB/RDW/R6
+lnAH /dev/gpio/CHIP21/P1 /dev/gpio/CLK/MB/RDW/R5
+lnAH /dev/gpio/CHIP21/P2 /dev/gpio/CLK/MB/RDW/R4
+lnAH /dev/gpio/CHIP21/P3 /dev/gpio/CLK/MB/RDW/R3
+lnAH /dev/gpio/CHIP21/P4 /dev/gpio/CLK/MB/RDW/R2
+lnAH /dev/gpio/CHIP21/P5 /dev/gpio/CLK/MB/RDW/R1
+lnAH /dev/gpio/CHIP21/P6 /dev/gpio/CLK/MB/RDW/R0
 
 
 mkdir -p /dev/gpio/CLK/MB/FDW
-lnAL /dev/gpio/CHIP21/P7 /dev/gpio/CLK/MB/FDW/F6
-lnAL /dev/gpio/CHIP22/P0 /dev/gpio/CLK/MB/FDW/F5
-lnAL /dev/gpio/CHIP22/P1 /dev/gpio/CLK/MB/FDW/F4
-lnAL /dev/gpio/CHIP22/P2 /dev/gpio/CLK/MB/FDW/F3
-lnAL /dev/gpio/CHIP22/P3 /dev/gpio/CLK/MB/FDW/F2
-lnAL /dev/gpio/CHIP22/P4 /dev/gpio/CLK/MB/FDW/F1
-lnAL /dev/gpio/CHIP22/P5 /dev/gpio/CLK/MB/FDW/F0
+lnAH /dev/gpio/CHIP21/P7 /dev/gpio/CLK/MB/FDW/F6
+lnAH /dev/gpio/CHIP22/P0 /dev/gpio/CLK/MB/FDW/F5
+lnAH /dev/gpio/CHIP22/P1 /dev/gpio/CLK/MB/FDW/F4
+lnAH /dev/gpio/CHIP22/P2 /dev/gpio/CLK/MB/FDW/F3
+lnAH /dev/gpio/CHIP22/P3 /dev/gpio/CLK/MB/FDW/F2
+lnAH /dev/gpio/CHIP22/P4 /dev/gpio/CLK/MB/FDW/F1
+lnAH /dev/gpio/CHIP22/P5 /dev/gpio/CLK/MB/FDW/F0
 
 mkdir -p /dev/gpio/CLK/MB/ODW
-lnAL /dev/gpio/CHIP22/P6 /dev/gpio/CLK/MB/ODW/S1
-lnAL /dev/gpio/CHIP22/P7 /dev/gpio/CLK/MB/ODW/S2
+lnAH /dev/gpio/CHIP22/P6 /dev/gpio/CLK/MB/ODW/S1
+lnAH /dev/gpio/CHIP22/P7 /dev/gpio/CLK/MB/ODW/S2
 
 
 # FMC PRESENT, Analog Power Good
