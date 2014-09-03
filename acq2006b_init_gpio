@@ -57,30 +57,30 @@ nice daemon /usr/local/bin/heartbeat
 
 
 mkdir -p /dev/gpio/CLK/MB/RDW
-ln -s /dev/gpio/CHIP1/P00/value /dev/gpio/CLK/MB/RDW/R0
-ln -s /dev/gpio/CHIP1/P01/value /dev/gpio/CLK/MB/RDW/R1
-ln -s /dev/gpio/CHIP1/P02/value /dev/gpio/CLK/MB/RDW/R2
-ln -s /dev/gpio/CHIP1/P03/value /dev/gpio/CLK/MB/RDW/R3
-ln -s /dev/gpio/CHIP1/P04/value /dev/gpio/CLK/MB/RDW/R4
-ln -s /dev/gpio/CHIP1/P05/value /dev/gpio/CLK/MB/RDW/R5
-ln -s /dev/gpio/CHIP1/P06/value /dev/gpio/CLK/MB/RDW/R6
+lnAH /dev/gpio/CHIP1/P00 /dev/gpio/CLK/MB/RDW/R0
+lnAH /dev/gpio/CHIP1/P01 /dev/gpio/CLK/MB/RDW/R1
+lnAH /dev/gpio/CHIP1/P02 /dev/gpio/CLK/MB/RDW/R2
+lnAH /dev/gpio/CHIP1/P03 /dev/gpio/CLK/MB/RDW/R3
+lnAH /dev/gpio/CHIP1/P04 /dev/gpio/CLK/MB/RDW/R4
+lnAH /dev/gpio/CHIP1/P05 /dev/gpio/CLK/MB/RDW/R5
+lnAH /dev/gpio/CHIP1/P06 /dev/gpio/CLK/MB/RDW/R6
 mkdir -p /dev/gpio/CLK/MB/FDW
-ln -s /dev/gpio/CHIP1/P07/value /dev/gpio/CLK/MB/FDW/F0
-ln -s /dev/gpio/CHIP1/P10/value /dev/gpio/CLK/MB/FDW/F1
-ln -s /dev/gpio/CHIP1/P11/value /dev/gpio/CLK/MB/FDW/F2
-ln -s /dev/gpio/CHIP1/P12/value /dev/gpio/CLK/MB/FDW/F3
-ln -s /dev/gpio/CHIP1/P13/value /dev/gpio/CLK/MB/FDW/F4
-ln -s /dev/gpio/CHIP1/P14/value /dev/gpio/CLK/MB/FDW/F5
-ln -s /dev/gpio/CHIP1/P15/value /dev/gpio/CLK/MB/FDW/F6
+lnAH /dev/gpio/CHIP1/P07 /dev/gpio/CLK/MB/FDW/F0
+lnAH /dev/gpio/CHIP1/P10 /dev/gpio/CLK/MB/FDW/F1
+lnAH /dev/gpio/CHIP1/P11 /dev/gpio/CLK/MB/FDW/F2
+lnAH /dev/gpio/CHIP1/P12 /dev/gpio/CLK/MB/FDW/F3
+lnAH /dev/gpio/CHIP1/P13 /dev/gpio/CLK/MB/FDW/F4
+lnAH /dev/gpio/CHIP1/P14 /dev/gpio/CLK/MB/FDW/F5
+lnAH /dev/gpio/CHIP1/P15 /dev/gpio/CLK/MB/FDW/F6
 mkdir -p /dev/gpio/CLK/MB/ODW
-ln -s /dev/gpio/CHIP1/P16/value /dev/gpio/CLK/MB/ODW/S0
-ln -s /dev/gpio/CHIP1/P17/value /dev/gpio/CLK/MB/ODW/S1
+lnAH /dev/gpio/CHIP1/P16 /dev/gpio/CLK/MB/ODW/S0
+lnAH /dev/gpio/CHIP1/P17 /dev/gpio/CLK/MB/ODW/S1
 
-ln -s /dev/gpio/CHIP1/P20/value /dev/gpio/FP_TRIG_DIR_OUT
-ln -s /dev/gpio/CHIP1/P21/value /dev/gpio/FP_SYNC_DIR_OUT
-ln -s /dev/gpio/CHIP1/P22/value /dev/gpio/FP_IO_DIR_OUT
-ln -s /dev/gpio/CHIP1/P23/value /dev/gpio/SYNC_IN_GPIO_OUT
-ln -s /dev/gpio/CHIP1/P24/value /dev/gpio/SYNC_OUT_GPIO_OUT
+lnAH /dev/gpio/CHIP1/P20 /dev/gpio/FP_TRIG_DIR_OUT
+lnAH /dev/gpio/CHIP1/P21 /dev/gpio/FP_SYNC_DIR_OUT
+lnAH /dev/gpio/CHIP1/P22 /dev/gpio/FP_IO_DIR_OUT
+lnAH /dev/gpio/CHIP1/P23 /dev/gpio/SYNC_IN_GPIO_OUT
+lnAH /dev/gpio/CHIP1/P24 /dev/gpio/SYNC_OUT_GPIO_OUT
 
 lnAL  /dev/gpio/CHIP1/P25	/dev/gpio/SYNC_CABLE_DET
 
