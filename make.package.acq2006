@@ -20,7 +20,7 @@ do
 	cp ${TOP}/linux-xlnx/$ko opkg/usr/local/lib/modules
 done
 
-cp acq2006_init_gpio_common.sh load.milo opkg/usr/local/bin
+cp load.milo opkg/usr/local/bin
 cp ${MODEL}_init_gpio opkg/usr/local/bin
 cp ${MODEL}.map   opkg/usr/local/
 cp ${MODEL}.init opkg/usr/local/init
