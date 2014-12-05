@@ -16,7 +16,7 @@ let pin01=$pin00+23
 let pin11=$pin10+23
 
 echo +++ gpiochip 1-0022 $CHIP1 gpio $pin00 $pin01
-echo +++ gpiochip 2-0023 $CHIP2 gpio $pin10 $pin11
+echo +++ gpiochip 1-0023 $CHIP2 gpio $pin10 $pin11
 
 mkdir -p /dev/gpio/CHIP1
 
@@ -81,6 +81,7 @@ lnAH /dev/gpio/CHIP1/P21 /dev/gpio/FP_SYNC_DIR_OUT
 lnAH /dev/gpio/CHIP1/P22 /dev/gpio/FP_IO_DIR_OUT
 lnAH /dev/gpio/CHIP1/P23 /dev/gpio/SYNC_IN_GPIO_OUT
 lnAH /dev/gpio/CHIP1/P24 /dev/gpio/SYNC_OUT_GPIO_OUT
+echo 1 > /dev/gpio/SYNC_OUT_GPIO_OUT
 
 lnAL  /dev/gpio/CHIP1/P25	/dev/gpio/SYNC_CABLE_DET
 

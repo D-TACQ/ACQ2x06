@@ -1,5 +1,6 @@
 #!/bin/bash
 
-./make.package.acq2006
-./make.package.acq2006b
+(cd ../DRIVERS/ISL22313;./make.zynq)
+sudo ./make.package.acq2006
+sudo ./make.package.acq2006b
 
