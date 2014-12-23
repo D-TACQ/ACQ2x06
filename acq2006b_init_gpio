@@ -114,6 +114,6 @@ lnAH /dev/gpio/CHIP2/P24/	/dev/gpio/IS_EE
 lnAL /dev/gpio/CHIP2/P25	/dev/gpio/IS_REVB	;# REVA not likely
 
 common_end
-
+source /usr/local/bin/acq2006_init_gpio_common.sh
 echo "++ acq2006b_init_gpio done"
 
