@@ -20,6 +20,7 @@ do
 	cp ${TOP}/linux-xlnx/$ko opkg/usr/local/lib/modules
 done
 cp ../DRIVERS/ISL22313/isl22313.ko opkg/usr/local/lib/modules
+cp ../DRIVERS/SI5326/si5326.ko opkg/usr/local/lib/modules
 
 cp load.milo opkg/usr/local/bin
 cp ${MODEL}_init_gpio opkg/usr/local/bin
