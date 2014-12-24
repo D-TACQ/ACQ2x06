@@ -1,0 +1,38 @@
+#!/usr/local/bin/expect
+
+set outfile "/sys/bus/i2c/devices/1-0068/si5326_reg"
+
+
+proc read_reg {reg} {
+	global outfile
+	if {$outfile == "-"} {
+		puts "$reg"
+	} else {
+		set fout [open $outfile w]
+                puts $fout "$reg"
+                close $fout
+		set fin [open $outfile r]
+		puts [gets $fin]
+		close $fin
+	}
+}
+
+
+proc seq {s1 s2} {
+	for {set i $s1} {$i <= $s2} {incr i} {
+		lappend out $i
+	}
+	return $out
+}
+
+set regs [seq 0 55]
+
+foreach reg [seq 0 55]  {
+	puts [read_reg $reg]
+}
+
+foreach reg [seq 128 143] {
+	puts [string trim [read_reg $reg]]
+}
+
+
