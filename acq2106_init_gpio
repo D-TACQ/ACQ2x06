@@ -35,6 +35,7 @@ let pin=$pin10
 let ix=0 
 #        P000102030405060710111213141516172021222324252627
 for dir in I I I I I I I I O O O O O O O O O O O O I I I I
+do
 	export_gpio $pin
 	ln -s /sys/class/gpio/gpio$pin /dev/gpio/CHIP2/$(printf P%02o $ix)		
 	[ "$dir" = "O" ] && setO gpio$pin
