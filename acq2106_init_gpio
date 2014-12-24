@@ -79,12 +79,12 @@ lnAH /dev/gpio/CHIP1/P27 /dev/gpio/LED/MGT5_R
 
 echo 1 > /dev/gpio/SYNC_OUT_GPIO_OUT
 
-lnAH /dev/gpio/CHIP2/P00	/dev/gpio/fmc1_present
-lnAH /dev/gpio/CHIP2/P01	/dev/gpio/fmc2_present
-lnAH /dev/gpio/CHIP2/P02	/dev/gpio/fmc3_present
-lnAH /dev/gpio/CHIP2/P03	/dev/gpio/fmc4_present
-lnAH /dev/gpio/CHIP2/P04	/dev/gpio/fmc5_present
-lnAH /dev/gpio/CHIP2/P05	/dev/gpio/fmc6_present
+lnAL /dev/gpio/CHIP2/P00	/dev/gpio/fmc1_present
+lnAL /dev/gpio/CHIP2/P01	/dev/gpio/fmc2_present
+lnAL /dev/gpio/CHIP2/P02	/dev/gpio/fmc3_present
+lnAL /dev/gpio/CHIP2/P03	/dev/gpio/fmc4_present
+lnAL /dev/gpio/CHIP2/P04	/dev/gpio/fmc5_present
+lnAL /dev/gpio/CHIP2/P05	/dev/gpio/fmc6_present
 lnAL /dev/gpio/CHIP2/P06 	/dev/gpio/15VP_PGD
 lnAL /dev/gpio/CHIP2/P07	/dev/gpio/15VN_PGD
 
