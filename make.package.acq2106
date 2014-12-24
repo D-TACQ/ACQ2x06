@@ -21,7 +21,7 @@ do
 done
 cp ../DRIVERS/ISL22313/isl22313.ko opkg/usr/local/lib/modules
 cp ../DRIVERS/SI5326/si5326.ko opkg/usr/local/lib/modules
-
+cp load.si5326 opkg/usr/local/bin
 cp load.milo opkg/usr/local/bin
 cp ${MODEL}_init_gpio opkg/usr/local/bin
 cp ${MODEL}.map   opkg/usr/local/
