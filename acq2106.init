@@ -1,10 +1,10 @@
 #!/bin/sh
 
+/usr/local/bin/load.milo
+/usr/local/bin/acq2106_init_gpio
 if [ $(cat /dev/gpio/MGT_PRESENT) -gt 0 ]; then
 	/usr/local/init/mgt482.init
 fi
-/usr/local/bin/load.milo
-/usr/local/bin/acq2106_init_gpio
 /sbin/insmod /usr/local/lib/modules/isl22313.ko
 /sbin/insmod /usr/local/lib/modules/si5326.ko
 mkdir -p /dev/acq2006/
