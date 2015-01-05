@@ -1,5 +1,8 @@
 #!/bin/sh
 
+if [ $(cat /dev/gpio/MGT_PRESENT) -gt 0 ]; then
+	/usr/local/init/mgt482.init
+fi
 /usr/local/bin/load.milo
 /usr/local/bin/acq2106_init_gpio
 /sbin/insmod /usr/local/lib/modules/isl22313.ko
