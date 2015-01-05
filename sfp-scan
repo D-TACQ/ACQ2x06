@@ -1,0 +1,59 @@
+#!/bin/sh
+
+
+avago_monitor() {
+awk '
+{ 
+        FMT="%10s:%7.2f %s\n";
+        if (NR==1+(96/16)) { 
+                printf(FMT, "Temp", ($1*256+$2)/256, "C");
+                printf(FMT, "VCC", ($3*256+$4)/10000.0, "V");
+                printf(FMT, "Tx Bias", ($5*256+$6)/2, "uA");
+                printf(FMT, "Tx Power", ($7*256+$8)*0.1, "uW");
+                printf(FMT, "Rx Pwr", ($9*256+$10)*0.1, "uW");
+         } 
+}'
+}
+
+bus0=8
+
+mkdir -p /dev/MGT482
+
+NOW="$(cat /dev/gpio/MGT482/SFP?/PRESENT)"
+if [ -e /dev/MGT482/init]; then
+	OLD="$(cat /dev/MGT482/init)"
+	if [ "x$OLD" != "x$NEW" ]; then
+		rm /dev/MGT482/init
+	fi
+fi
+
+
+for file in /dev/gpio/MGT482/SFP?/PRESENT
+do
+	if [ $(cat $file) -eq 1 ]; then
+		ppp=$(dirname $file)
+		SFP=$(basename $ppp)
+		SFPN=${SFP#SFP}
+		let bus=$bus0+$SFPN
+		eeprom=/sys/class/i2c-dev/i2c-$bus/device/$bus-0050/eeprom
+		ddm=/sys/class/i2c-dev/i2c-$bus/device/$bus-0051/eeprom
+		echo SFP $SFPN present
+		mkdir -p /dev/MGT482/$SFP
+		if [ ! -e /dev/MGT482/init ]; then
+			cat $eeprom > /dev/MGT482/$SFP/eeprom
+			cat $ddm > /dev/MGT482/$SFP/ddm
+		else
+			if [ -e /dev/MGT482/$SFP/ddm ]; then
+				cat $ddm > /dev/MGT482/$SFP/ddm
+			fi
+		fi
+		hexdump -C /dev/MGT482/$SFP/eeprom
+		if [ -e /dev/MGT482/$SFP/ddm ]; then
+			hexdump -e '16/1 "%3d " "\n"' /dev/MGT482/$SFP/ddm | \
+				avago_monitor >/dev/MGT482/$SFP/actuals
+			cat /dev/MGT482/$SFP/actuals
+		fi
+	fi
+done
+
+echo $NOW > /dev/MGT482/init
