@@ -7,7 +7,7 @@ MODEL=acq2106
 TOP=..
 
 rm -Rf opkg/*
-mkdir -p opkg/usr/local/bin opkg/usr/local/init opkg/usr/local/lib/modules
+mkdir -p opkg/usr/local/bin opkg/usr/local/init opkg/usr/local/lib/modules opkg/usr/local/CARE
 
 KO="./drivers/gpio/gpio-lp3943.ko\
 	./drivers/mfd/lp3943.ko\
