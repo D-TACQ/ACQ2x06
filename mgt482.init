@@ -88,3 +88,5 @@ do
 	[ -e $kb ] && set.sys $kb 1	
 done
 
+echo +++ disabled SFP $(cat $MGTD/SFP?/TX_DISABLE)
+
