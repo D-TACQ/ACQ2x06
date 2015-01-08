@@ -83,3 +83,8 @@ if [ "x$CHIP2" != "x" -a "x$CHIP2" != "xgpiochip*" ]; then
 	init_sfp_chip CHIP2 $CHIP2 5 6 7 8
 fi
 
+for kb in $MGTD/SFP?/TX_DISABLE
+do
+	[ -e $kb ] && set.sys $kb 1	
+done
+
