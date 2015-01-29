@@ -5,7 +5,10 @@ PIDF=/var/run/sfpmon.pid
 if [ -e $PIDF ]; then
 	kill $(cat $PIDF)
 	rm $PIDF
+else
+	sleep 10
 fi
+logger -t info sfp spawning sfp-scan
 sfp-scan monitor &
 echo $! > $PIDF
 wait
