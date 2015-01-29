@@ -1,0 +1,14 @@
+#!/bin/sh
+
+PIDF=/var/run/sfpmon.pid
+
+if [ -e $PIDF ]; then
+	kill $(cat $PIDF)
+	rm $PIDF
+fi
+sfp-scan monitor &
+echo $! > $PIDF
+wait
+
+
+
