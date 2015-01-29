@@ -1,9 +1,8 @@
 #!/bin/sh
 
-
 avago_monitor() {
-awk '
-{ 
+	hexdump -e '16/1 "%3d " "\n"' $1 | awk '
+	{ 
         FMT="%10s:%7.2f %s\n";
         if (NR==1+(96/16)) { 
                 printf(FMT, "Temp", ($1*256+$2)/256, "C");
@@ -12,48 +11,95 @@ awk '
                 printf(FMT, "Tx Power", ($7*256+$8)*0.1, "uW");
                 printf(FMT, "Rx Pwr", ($9*256+$10)*0.1, "uW");
          } 
-}'
+	}'
 }
 
-bus0=8
 
-mkdir -p /dev/MGT482
-
-NOW="$(cat /dev/gpio/MGT482/SFP?/PRESENT)"
-if [ -e /dev/MGT482/init]; then
-	OLD="$(cat /dev/MGT482/init)"
-	if [ "x$OLD" != "x$NEW" ]; then
-		rm /dev/MGT482/init
+do_one_sfp() {
+	file=$1 verbose=$2
+	ppp=$(dirname $file)
+	SFP=$(basename $ppp)
+	SFPN=${SFP#SFP}
+	let bus=$bus0+$SFPN
+	eeprom=/sys/class/i2c-dev/i2c-$bus/device/$bus-0050/eeprom
+	ddm=/sys/class/i2c-dev/i2c-$bus/device/$bus-0051/eeprom
+	[ $verbose -ne 0 ] && echo SFP $SFPN present
+	mkdir -p /dev/MGT482/$SFP
+	if [ ! -e /dev/MGT482/init ]; then
+		cat $eeprom > /dev/MGT482/$SFP/eeprom
+		cat $ddm > /dev/MGT482/$SFP/ddm
+	else
+		[ -e /dev/MGT482/$SFP/ddm ] && cat $ddm > /dev/MGT482/$SFP/ddm
 	fi
-fi
+	[ $verbose -ne 0 ] && hexdump -C /dev/MGT482/$SFP/eeprom
+	if [ -e /dev/MGT482/$SFP/ddm ]; then
+		avago_monitor /dev/MGT482/$SFP/ddm >/dev/MGT482/$SFP/actuals
+		[ $verbose -ne 0 ] && cat /dev/MGT482/$SFP/actuals
+	fi		
+}
+
+do_sfp_scan() {
+	verbose=$1
+	bus0=8
+
+	mkdir -p /dev/MGT482
+
+# force full update first time or changed config
+	NOW="$(cat /dev/gpio/MGT482/SFP?/PRESENT)"
+	if [ -e /dev/MGT482/init ]; then
+		OLD="$(cat /dev/MGT482/init)"
+		if [ "x$OLD" != "x$NEW" ]; then
+			rm /dev/MGT482/init
+			rm -Rf /dev/MGT482/SFP?
+		fi
+	fi
 
 
-for file in /dev/gpio/MGT482/SFP?/PRESENT
-do
-	if [ $(cat $file) -eq 1 ]; then
-		ppp=$(dirname $file)
-		SFP=$(basename $ppp)
-		SFPN=${SFP#SFP}
-		let bus=$bus0+$SFPN
-		eeprom=/sys/class/i2c-dev/i2c-$bus/device/$bus-0050/eeprom
-		ddm=/sys/class/i2c-dev/i2c-$bus/device/$bus-0051/eeprom
-		echo SFP $SFPN present
-		mkdir -p /dev/MGT482/$SFP
-		if [ ! -e /dev/MGT482/init ]; then
-			cat $eeprom > /dev/MGT482/$SFP/eeprom
-			cat $ddm > /dev/MGT482/$SFP/ddm
+	for file in /dev/gpio/MGT482/SFP?/PRESENT
+	do
+		[ -e $file ] && [ $(cat $file) -eq 1 ] && do_one_sfp $file $verbose
+	done
+
+	echo "$NOW" > /dev/MGT482/init
+}
+
+create_c2r2() {
+	cat >/dev/shm/c2r2 - <<EOF
+        <pageFormat>
+                <noCols>2</noCols>
+                <colItems>2</colItems>
+        </pageFormat>	
+EOF
+}
+
+make_xml_data() {
+	[ -e /dev/shm/c2r2 ] || create_c2r2
+	# force row/column order
+	spec="fs2xml -s /dev/shm/c2r2 -p" 
+	for sfp in 1 3 2 4
+	do
+		file=/dev/gpio/MGT482/SFP$sfp/PRESENT
+		if [ -e $file ] && [ $(cat $file) -eq 1 ]; then
+			spec="$spec SFP$sfp 'cat /dev/MGT482/SFP$sfp/actuals'"
 		else
-			if [ -e /dev/MGT482/$SFP/ddm ]; then
-				cat $ddm > /dev/MGT482/$SFP/ddm
-			fi
-		fi
-		hexdump -C /dev/MGT482/$SFP/eeprom
-		if [ -e /dev/MGT482/$SFP/ddm ]; then
-			hexdump -e '16/1 "%3d " "\n"' /dev/MGT482/$SFP/ddm | \
-				avago_monitor >/dev/MGT482/$SFP/actuals
-			cat /dev/MGT482/$SFP/actuals
-		fi
-	fi
-done
+			spec="$spec SFP$sfp 'echo not present'"
+		fi 
+	done
+	echo "$spec" > /tmp/spec.txt
+	eval $spec > /dev/shm/sfp.xml
+}
 
-echo $NOW > /dev/MGT482/init
+case $1 in
+monitor)
+	while [ 1 ]; do
+		do_sfp_scan 0
+		make_xml_data
+		sleep 2
+	done
+	exit 0;;
+silent)
+	do_sfp_scan 0;;
+*)
+	do_sfp_scan 1;;
+esac
+
