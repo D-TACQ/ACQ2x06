@@ -92,8 +92,12 @@ init_sfp_chip() {
 
 # i2c gpio
 
-CHIP1=$(basename $(echo /sys/bus/i2c/devices/8-0022/gpio/gpiochip*))
-CHIP2=$(basename $(echo /sys/bus/i2c/devices/8-0023/gpio/gpiochip*))
+I2CBUS=/sys/bus/i2c/devices/
+mkdir /dev/sites/12
+ln -s $I2CBUS/8-0054/eeprom /dev/sites/12
+fru-dump-acq /dev/sites/12/eeprom >/dev/sites/details
+CHIP1=$(basename $(echo $I2CBUS/8-0022/gpio/gpiochip*))
+CHIP2=$(basename $(echo $I2CBUS/8-0023/gpio/gpiochip*))
 
 mkdir -p $MGTD
 
