@@ -127,7 +127,8 @@ lnAH /dev/gpio/CHIP24/P5 /dev/gpio/BV_RSV1
 lnAH /dev/gpio/CHIP24/P6 /dev/gpio/BV_RSV2
 lnAH /dev/gpio/CHIP24/P7 /dev/gpio/JTAG14_ALL
 
-common_end
+
 source /usr/local/bin/acq2006_init_gpio_common.sh
+common_end
 echo "++ acq2006_init_gpio done"
 

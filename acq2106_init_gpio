@@ -109,8 +109,8 @@ lnAH /dev/gpio/CHIP2/P26/	/dev/gpio/IS_ACQ2006
 lnAL /dev/gpio/CHIP2/P27/	/dev/gpio/IS_RES
 
 
-common_end
-source /usr/local/bin/acq2006_init_gpio_common.sh
 
+source /usr/local/bin/acq2006_init_gpio_common.sh
+common_end
 echo "++ acq2006b_init_gpio done"
 
