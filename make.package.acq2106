@@ -7,7 +7,7 @@ MODEL=acq2106
 TOP=..
 
 rm -Rf opkg/*
-mkdir -p opkg/usr/local/bin opkg/usr/local/init opkg/usr/local/lib/modules opkg/usr/local/CARE
+mkdir -p opkg/usr/local/bin opkg/usr/local/init opkg/usr/local/lib/modules opkg/usr/local/CARE opkg/etc/si5326.d
 
 KO="./drivers/gpio/gpio-lp3943.ko\
 	./drivers/mfd/lp3943.ko\
@@ -21,7 +21,7 @@ do
 done
 cp ../DRIVERS/ISL22313/isl22313.ko opkg/usr/local/lib/modules
 cp ../DRIVERS/SI5326/si5326.ko opkg/usr/local/lib/modules
-cp *.si5326 opkg/usr/local/bin
+cp *.si5326* opkg/usr/local/bin
 cp mgt482-lamptest opkg/usr/local/CARE
 cp sfp-scan sfpmon opkg/usr/local/bin
 cp load.milo opkg/usr/local/bin
@@ -29,6 +29,8 @@ cp ${MODEL}_init_gpio opkg/usr/local/bin
 cp ${MODEL}.map   opkg/usr/local/
 cp ${MODEL}.init opkg/usr/local/init
 cp mgt482.init opkg/usr/local/init
+cp si5326.d/* opkg/etc/si5326.d
+
 
 tar czf release/${SEQ}-${MODEL}-${DC}.tgz -C opkg .
 rm -Rf ../PACKAGES/${SEQ}-${MODEL}*
