@@ -27,6 +27,16 @@ foreach arg $::argv {
 	}
 }
 
+if {![file exists $regmap]} {
+	set regmap2 "/etc/si5326.d/$regmap"
+	if {[file exists $regmap2]} {
+		set regmap $regmap2
+	} else {
+		puts "regmap $regmap NOT found"
+		exit 1
+	}
+}
+	
 puts "done: here with outfile:$outfile regmap:$regmap"
 
 proc write_reg {reg value} {
@@ -79,6 +89,13 @@ while {$data != ""} {
 	gets $fin data
 }
 close $fin
+
+set descr [exec basename $regmap]
+set fs [open /etc/acq400/0/si5326config w]
+regsub si5326_ $descr "" descr
+regsub .txt $descr "" descr
+puts $fs $descr
+close $fs
 
 
 
