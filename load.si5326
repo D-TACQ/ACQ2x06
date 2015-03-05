@@ -97,5 +97,10 @@ regsub .txt $descr "" descr
 puts $fs $descr
 close $fs
 
+set fs [open /etc/acq400/0/si5326bypass w]
+set bp [regexp bypass $descr]
+puts $fs $bp
+close $fs
+
 
 
