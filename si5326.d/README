@@ -1,0 +1,17 @@
+README for si5326.d
+These are si5326 config files generated Si5326 config tool
+Naming convention:
+
+si5326_IN_OUT[_frequency]
+
+Where IN_OUT is the IN to OUT ratio, and [_frequency] is an optional frequency 
+limitation.
+
+To load a configuration:
+load.si5326 CONFIG_FILE
+
+To use the configuration:
+- select FPMUX to FPCLK
+- use clk=1,0,0 to drive the sampling.
+
+
