@@ -5,8 +5,10 @@ proc sfp_decode {eeprom} {
 	set sid [read $fp]
 	close $fp
 #             1234567890	
+	puts "    Vendor: [string range $sid 20 35]"
 	puts "        PN: [string range $sid 40 55]"
 	puts "        SN: [string range $sid 68 83]"
+	puts "-------------------------------------"
 }
 
 
