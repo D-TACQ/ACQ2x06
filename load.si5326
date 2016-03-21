@@ -2,42 +2,6 @@
 
 set outfile "/sys/bus/i2c/devices/1-0068/si5326_reg"
 
-if { $::argc <= 0 } {
-	puts {USAGE: load.si5326 [-o file] regmap}
-	exit 1
-}
-
-set state "look4regmap"
-
-foreach arg $::argv {
-#	puts "state:$state arg:$arg"
-	if {$state == "look4regmap"} {
-		if {$arg == "-o"} {
-			set state "look4outfile"
-		} else {
-			set regmap $arg
-			break
-		}
-	} elseif {$state == "look4outfile"} {
-		set outfile $arg
-		set state "look4regmap"
-	} else {
-		puts "state error:$state"
-		exit 1
-	}
-}
-
-if {![file exists $regmap]} {
-	set regmap2 "/etc/si5326.d/$regmap"
-	if {[file exists $regmap2]} {
-		set regmap $regmap2
-	} else {
-		puts "regmap $regmap NOT found"
-		exit 1
-	}
-}
-	
-puts "done: here with outfile:$outfile regmap:$regmap"
 
 proc write_reg {reg value} {
 	global outfile
@@ -65,7 +29,6 @@ proc read_reg {reg} {
 }
 
 
-
 proc process {kv} {
 	if {[regexp {([0-9]+), 0x([0-9A-F]+)} $kv dontcare key value]} {
 #		puts "key $key value $value"
@@ -81,7 +44,53 @@ proc process {kv} {
 		puts "regexp fail $kv"
 	}
 }
-set fin [open $regmap r]
+
+
+if { $::argc <= 0 } {
+	puts {USAGE: load.si5326 [-o file] regmap}
+	exit 1
+}
+
+set state "look4regmap"
+
+
+foreach arg $::argv {
+#	puts "state:$state arg:$arg"
+	if {$state == "look4regmap"} {
+		if {$arg == "-o"} {
+			set state "look4outfile"
+		} else {
+			set regmap $arg
+			break
+		}
+	} elseif {$state == "look4outfile"} {
+		set outfile $arg
+		set state "look4regmap"
+	} else {
+		puts "state error:$state"
+		exit 1
+	}
+}
+
+
+if {[string match - $regmap]} {
+	set fin stdin
+} else {
+	if {![file exists $regmap]} {
+		set regmap2 "/etc/si5326.d/$regmap"
+		if {[file exists $regmap2]} {
+			set regmap $regmap2
+		} else {
+			puts "regmap $regmap NOT found"
+			exit 1
+		}
+	}
+	set fin [open $regmap r]
+}
+	
+puts "done: here with outfile:$outfile regmap:$regmap"
+
+
 fconfigure $fin -buffering line
 gets $fin data
 while {$data != ""} {
