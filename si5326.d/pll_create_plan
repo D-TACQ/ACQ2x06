@@ -9,6 +9,10 @@ set FINMAX	1e8
 set FOUTMIN	2e3
 set FOUTMAX	1e8
 
+set FOSC_MIN	4.85e9
+set FOSC_MAX	5.67e9
+set FOSC_MID	[expr ($FOSC_MAX + $FOSC_MIN)/2]
+
 if {$FIN < $FINMIN} {
 	puts "ERROR: FIN < $FINMIN"
 	exit 1;
@@ -23,5 +27,111 @@ if {$FIN < $FINMIN} {
 	exit 1
 }
 
+set N2_HS	{11 10 9 8 7 6 5 4}
+set F3_MIN	2e3
+set F3_MAX	[expr min(2e6, $FIN)]
+set N2_LSMAX 	[expr 1<<20]
+set N3_MAX	[expr 1<<20]
+
+proc solveN2N3 {solution} {
+	upvar $solution sol
+	global N2_HS F3_MIN F3_MAX N2_LSMAX FIN
+	
+	set fosc [dict get $sol fosc]
+	
+	puts "solveN2N3 solving fosc $fosc"
+	foreach n2_hs $N2_HS {
+		set f3 [expr $fosc/$n2_hs]
+		if {$f3 < $F3_MIN} {
+			puts "reject $n2_hs too low"
+		} elseif {[expr $f3/$N2_LSMAX] > $F3_MAX} {
+			puts "reject $n2_hs too high"
+		} else {
+			set n2_ls [expr int(ceil($fosc/$n2_hs/$F3_MAX))]
+			if {[expr $n2_ls & 0x1]} {
+				incr n2_ls
+			}
+			set f3_actual [expr $fosc/$n2_hs/$n2_ls]
+			puts "n2_hs $n2_hs n2_ls $n2_ls f3 [format %.2e $f3_actual]"
+			
+			set n3 [expr int($FIN/$f3_actual)]
+			
+			dict set sol n2_hs $n2_hs
+			dict set sol n2_ls $n2_ls
+			dict set sol f3 $f3_actual
+			dict set sol n3 $n3
+			
+			return 1
+		}
+	}
+	
+	return 0
+}
+
+
 puts "calculating FIN:$FIN FOUT:$FOUT"
+
+set N1_HS {4 5 6 7 8 9 10 11}
+
+set N1_LSMAX [expr 1<<20]
+
+set N1_MIN [expr ceil($FOSC_MIN/$FOUT)]
+set N1_MAX [expr floor($FOSC_MAX/$FOUT)]
+
+
+proc solveN1 {solution} {
+	upvar $solution sol
+	global FOUT FOSC_MID N1_LSMAX 
+	
+	set fosc $FOSC_MID
+	set n1_hs [dict get $sol n1_hs]	
+	set n1_min $n1_hs
+	set n1_max [expr $n1_hs * $N1_LSMAX]
+	
+	set n1_ls [expr int($fosc / $FOUT / $n1_hs)]
+	
+	if {$n1_ls >= $N1_LSMAX} {
+		puts "n1_ls too big $n1_ls > $N1_LSMAX"
+		return 0
+	} elseif { [expr $n1_ls & 0x01] } {
+#		puts "n1_ls is NOT EVEN"
+		incr n1_ls
+	}
+	set fosc [expr $FOUT * $n1_hs * $n1_ls]
+#	puts "fosc_min [format %.2e $fosc_min] fosc_max [format %.2e $fosc_max]"
+	puts "n1_hs $n1_hs n1_ls $n1_ls fosc [format %.2e $fosc]"
+		
+	dict set sol n1_ls $n1_ls
+	dict set sol fosc $fosc
+	return 1
+}
+proc showSolution {solution} {
+	upvar $solution sol
+	global FIN FOUT
+	foreach key [dict keys $sol] {
+		if {[string first f $key] >=0 || [string first F $key] >= 0} {
+			puts "solution $key [format %.3e [dict get $sol $key]]"
+		} else {
+			puts "solution $key [dict get $sol $key]"
+		}		
+	}
+	set fosc [expr $FIN*[dict get $sol n2_hs]*[dict get $sol n2_ls]/[dict get $sol n3]]
+	set fout [expr $fosc/[dict get $sol n1_hs]/[dict get $sol n1_ls]]
+	puts "check FOUT $FOUT fout [format %.2e $fout] err: [expr $fout-$FOUT]"
+}
+
+
+foreach n1_hs $N1_HS {
+	set solution [dict create n1_hs $n1_hs]
+	if {[solveN1 solution] == 1} {
+		if {[solveN2N3 solution] == 1} {			
+			showSolution solution			
+		}
+	}
+#	puts "consider n1_hs $n1_hs"
+
+
+	
+}
+
 
