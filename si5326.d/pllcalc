@@ -65,6 +65,6 @@ set FPLL [expr $FIN/$N3*$N2]
 set FOUT [expr $FPLL/$N1]
 
 puts "FPLL 4.85–5.67 GHz : [format "%.2e" $FPLL]"
-puts "FIN:[format "%.2e" $FIN] FOUT:[format "%.2e" $FOUT]"
+puts "FIN:[format "%.3e" $FIN] FOUT:[format "%.3e" $FOUT]"
 
 

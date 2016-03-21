@@ -148,7 +148,7 @@ proc putN2 {solution} {
 	set n2_hs [dict get $sol n2_hs]
 	set n2_ls [expr [dict get $sol n2_ls] - 1]
 	
-	puts [format "%d 0x%02x" 40 [expr ($n2_hs-4) << 4 | $n2_ls >> 16]]
+	puts [format "%d 0x%02x" 40 [expr ($n2_hs-4) << 5 | $n2_ls >> 16]]
 	puts [format "%d 0x%02x" 41 [expr ($n2_ls>>8) & 0x00ff]]
 	puts [format "%d 0x%02x" 42 [expr $n2_ls & 0x0ff]]
 }
@@ -157,10 +157,11 @@ proc putN2 {solution} {
 proc putN31 {solution} {
 	upvar $solution sol
 	set n31 [expr [dict get $sol n3] - 1]
+	puts "# n31 $n31"
 	
 	puts [format "%d 0x%02x" 43 [expr $n31 >> 16]]
 	puts [format "%d 0x%02x" 44 [expr ($n31 >> 8) & 0x0ff]]
-	puts [format "%d 0x%02d" 45 [expr $n31 & 0x0ff]];
+	puts [format "%d 0x%02x" 45 [expr $n31 & 0x0ff]];
 }
 
 proc putN1 {solution} {
