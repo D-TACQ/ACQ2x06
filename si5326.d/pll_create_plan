@@ -53,7 +53,7 @@ proc solveN2N3 {solution} {
 	
 	array set solutions {}
 	
-	puts "solveN2N3 solving fosc $fosc f3 $f3"
+#	puts "solveN2N3 solving fosc $fosc f3 $f3"
 	foreach n2_hs $N2_HS {
 		set n2_ls [expr int(ceil($fosc/$n2_hs/$f3))]
 		if {[expr $n2_ls & 0x1]} {
@@ -62,7 +62,7 @@ proc solveN2N3 {solution} {
 		set fosca [expr $FIN*$n2_hs*$n2_ls/$n3]
 		set foscerr [pc_error $fosc $fosca]
 		
-		puts "solveN2N3: n2_hs $n2_hs error [pc_error $fosc $fosca] %"
+#		puts "solveN2N3: n2_hs $n2_hs error [pc_error $fosc $fosca] %"
 		
 		set tmp $sol
 		dict set tmp n2_ls $n2_ls
@@ -82,12 +82,12 @@ proc solveN2N3 {solution} {
 			set min_key $n2_hs
 		}
 	}
-	puts "The winner is: $min_key $min_err"
+#	puts "The winner is: $min_key $min_err"
 	set sol $solutions($min_key)
 	return 1
 }
 
-puts "calculating FIN:$FIN FOUT:$FOUT"
+puts "# calculating FIN:$FIN FOUT:$FOUT"
 
 set N1_HS {4 5 6 7 8 9 10 11}
 
@@ -117,7 +117,7 @@ proc solveN1 {solution} {
 	}
 	set fosc [expr $FOUT * $n1_hs * $n1_ls]
 #	puts "fosc_min [format %.2e $fosc_min] fosc_max [format %.2e $fosc_max]"
-	puts "n1_hs $n1_hs n1_ls $n1_ls fosc [format %.2e $fosc]"
+#	puts "n1_hs $n1_hs n1_ls $n1_ls fosc [format %.2e $fosc]"
 		
 	dict set sol n1_ls $n1_ls
 	dict set sol fosc $fosc
@@ -128,15 +128,15 @@ proc showSolution {solution} {
 	global FIN FOUT
 	foreach key [dict keys $sol] {
 		if {[string first f $key] >=0 || [string first F $key] >= 0} {
-			puts "solution $key [format %.3e [dict get $sol $key]]"
+			puts "# solution $key [format %.3e [dict get $sol $key]]"
 		} else {
-			puts "solution $key [dict get $sol $key]"
+			puts "# solution $key [dict get $sol $key]"
 		}		
 	}
 	set fosc [expr $FIN*[dict get $sol n2_hs]*[dict get $sol n2_ls]/[dict get $sol n3]]
-	puts "check fosc [format %.2e $fosc]"
+	puts "# check fosc [format %.2e $fosc]"
 	set fout [expr $fosc/[dict get $sol n1_hs]/[dict get $sol n1_ls]]
-	puts "check FOUT $FOUT fout [format %.3e $fout] err: [format %.3f [pc_error $fout $FOUT]] %"
+	puts "# check FOUT $FOUT fout [format %.3e $fout] err: [format %.3f [pc_error $fout $FOUT]] %"
 }
 
 proc putBW {solution} {
@@ -186,14 +186,28 @@ proc dumpSolution {solution} {
 	putICAL sol
 }
 
-foreach n1_hs $N1_HS {
+array set solutions {}
+foreach n1_hs $N1_HS {	
 	set solution [dict create n1_hs $n1_hs]
 	if {[solveN1 solution] == 1} {
 		if {[solveN2N3 solution] == 1} {			
-			showSolution solution
-			dumpSolution solution
+			set solutions($n1_hs) $solution
 		}
 	}
 }
 
 
+set min_err 100
+set min_key 0
+foreach n1_hs [array names solutions] {
+	set foscerr [dict get $solutions($n1_hs) foscerr]
+	#puts "hello key:$n2_hs foscerr:$foscerr"
+	if {$foscerr < $min_err} {
+		set min_err $foscerr
+		set min_key $n1_hs
+	}
+}
+puts "# The overall winner is n1_hs: $min_key"
+set solution $solutions($min_key)	
+showSolution solution
+dumpSolution solution
