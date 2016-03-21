@@ -1,0 +1,6 @@
+#!/bin/bash
+
+sed -e 's/, / 0x/' -e 's/h//' $1 | 
+	grep 0x | grep -v ^# | ./pllcalc $2
+
+

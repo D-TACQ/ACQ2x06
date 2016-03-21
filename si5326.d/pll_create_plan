@@ -1,0 +1,27 @@
+#!/usr/bin/expect
+
+
+set FIN [lindex $argv 0]
+set FOUT [lindex $argv 1]
+
+set FINMIN	2e3
+set FINMAX	1e8
+set FOUTMIN	2e3
+set FOUTMAX	1e8
+
+if {$FIN < $FINMIN} {
+	puts "ERROR: FIN < $FINMIN"
+	exit 1;
+} elseif {$FIN > $FINMAX} {
+	puts "ERROR: FIN > $FINMAX"
+	exit 1
+} elseif {$FOUT < $FOUTMIN} {
+	puts "ERROR: FOUT < $FOUTMIN"
+	exit 1
+} elseif { $FOUT > $FOUTMAX} {
+	puts "ERROR: FOUT > $FOUTMAX"
+	exit 1
+}
+
+puts "calculating FIN:$FIN FOUT:$FOUT"
+

@@ -1,5 +1,5 @@
 #HEADER
-# Date: 26 August 2015 10:53
+# Date: 01 February 2016 12:04
 # File Version: 3
 # Software Name: Precision Clock EVB Software
 # Software Version: 5.0
@@ -13,37 +13,37 @@
 # Channel: 1
 # Frequency (MHz): 33.333000
 # N3: 11111
-# Maximum (MHz): 34.999650
-# Minimum (MHz): 29.937972
+# Maximum (MHz): 35.795096
+# Minimum (MHz): 30.618380
 #END_INPUT
 #PLL
 # Name: PLL
-# Frequency (MHz): 5400.000000
+# Frequency (MHz): 5280.000000
 # f3 (MHz): 0.003000
-# N1_HS: 6
-# N2_HS: 8
-# N2_LS: 225000
-# Phase Offset Resolution (ns): 1.11111
+# N1_HS: 11
+# N2_HS: 5
+# N2_LS: 352000
+# Phase Offset Resolution (ns): 2.08333
 # BWSEL_REG Option: Frequency (Hz)
-#  1:  106
+#  1:  110
 #END_PLL
 #OUTPUT
 # Name: CKOUT
 # Channel: 1
-# Frequency (MHz): 50.000000
-# NC1_LS: 18
-# CKOUT1 to CKIN1 Ratio: 50000 / 33333
-# Maximum (MHz): 52.500000
-# Minimum (MHz): 44.907407
+# Frequency (MHz): 80.000000
+# NC1_LS: 6
+# CKOUT1 to CKIN1 Ratio: 80000 / 33333
+# Maximum (MHz): 85.909089
+# Minimum (MHz): 73.484846
 #END_OUTPUT
 #OUTPUT
 # Name: CKOUT
 # Channel: 2
-# Frequency (MHz): 50.000000
-# NC_LS: 18
+# Frequency (MHz): 80.000000
+# NC_LS: 6
 # CKOUT2 to CKOUT1 Ratio: 1 / 1
-# Maximum (MHz): 52.500000
-# Minimum (MHz): 44.907407
+# Maximum (MHz): 85.909089
+# Minimum (MHz): 73.484846
 #END_OUTPUT
 #CONTROL_FIELD
 # Register-based Controls
@@ -93,11 +93,11 @@
 #           FOS2_MSK: 0x1
 #           FOS1_MSK: 0x0
 #            LOL_MSK: 0x0
-#              N1_HS: 0x2
-#             NC1_LS: 0x11
-#             NC2_LS: 0x11
-#              N2_LS: 0x36EE7
-#              N2_HS: 0x4
+#              N1_HS: 0x7
+#             NC1_LS: 0x5
+#             NC2_LS: 0x5
+#              N2_LS: 0x55EFF
+#              N2_HS: 0x1
 #                N31: 0x2B66
 #                N32: 0x2B66
 #         CLKIN2RATE: 0x0
@@ -131,16 +131,16 @@
  22, DFh
  23, 1Dh
  24, 3Ch
- 25, 40h
+ 25, E0h
  31, 00h
  32, 00h
- 33, 11h
+ 33, 05h
  34, 00h
  35, 00h
- 36, 11h
- 40, 83h
- 41, 6Eh
- 42, E7h
+ 36, 05h
+ 40, 25h
+ 41, 5Eh
+ 42, FFh
  43, 00h
  44, 2Bh
  45, 66h

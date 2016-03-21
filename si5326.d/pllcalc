@@ -1,0 +1,70 @@
+#!/usr/bin/expect
+
+
+array set regs {}
+
+while {[gets stdin line] >= 0} {
+#	puts "Hello $line"
+	if {[scan $line "%d %s" reg val] == 2} {
+#		puts "Hello $line $reg $val"
+		set regs($reg) $val
+	}
+}
+
+
+proc getHS {bf} {
+	return [expr $bf+4]
+}
+proc getN2_HS {} {
+	global regs
+	return [getHS [expr $regs(40) >> 5] ]
+}
+
+proc getN2_LS {} {
+	global regs
+	set a [expr ($regs(40) & 0x0f) << 16]
+	set b [expr $regs(41) << 8]
+	set c [expr $regs(42) << 0]
+	return [expr ($a | $b | $c) + 1 ]
+}
+
+proc getN31 {} {
+	global regs
+	set a [expr ($regs(43) & 0x07) << 16]
+	set b [expr $regs(44) << 8]
+	set c [expr $regs(45)]
+	return [expr ($a | $b | $c) + 1]
+}
+
+proc getN1_HS {} {
+	global regs
+	return [getHS [expr $regs(25) >> 5] ]
+}
+
+proc getN1_LS {} {
+	global regs
+	set a [expr ($regs(31) & 0x0f) << 16]
+	set b [expr $regs(32) << 8]
+	set c [expr $regs(33)]
+	return [expr ($a | $b | $c) + 1]
+}
+puts "N1_HS: [getN1_HS]"
+puts "N1_LS: [getN1_LS]"
+puts "N2_HS: [getN2_HS]"
+puts "N2_LS: [getN2_LS]"
+puts "N31:   [getN31]"
+
+set FIN [lindex $argv 0]
+set N1	[expr [getN1_HS] * [getN1_LS]]
+set N2  [expr [getN2_HS] * [getN2_LS]]
+set N3  [getN31]
+
+puts "N3=$N3 N2=$N2 N1=$N1"
+
+set FPLL [expr $FIN/$N3*$N2]
+set FOUT [expr $FPLL/$N1]
+
+puts "FPLL 4.85–5.67 GHz : [format "%.2e" $FPLL]"
+puts "FIN:[format "%.2e" $FIN] FOUT:[format "%.2e" $FOUT]"
+
+
