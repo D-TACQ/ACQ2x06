@@ -51,10 +51,12 @@ proc solveN2N3 {solution} {
 			if {[expr $n2_ls & 0x1]} {
 				incr n2_ls
 			}
-			set f3_actual [expr $fosc/$n2_hs/$n2_ls]
-			puts "n2_hs $n2_hs n2_ls $n2_ls f3 [format %.2e $f3_actual]"
+			set f3 [expr $fosc/$n2_hs/$n2_ls]
+			puts "n2_hs $n2_hs n2_ls $n2_ls f3 [format %.2e $f3]"
 			
-			set n3 [expr int($FIN/$f3_actual)]
+			set n3 [expr int($FIN/$f3)]
+			set f3_actual [expr $FIN /$n3]
+			puts "solveN2N3: f3 $f3 f3_actual $f3_actual error [format %.1f [expr ($f3_actual-$f3)/$f3*100]] %"
 			
 			dict set sol n2_hs $n2_hs
 			dict set sol n2_ls $n2_ls
@@ -116,6 +118,7 @@ proc showSolution {solution} {
 		}		
 	}
 	set fosc [expr $FIN*[dict get $sol n2_hs]*[dict get $sol n2_ls]/[dict get $sol n3]]
+	puts "check fosc [format %.2e $fosc]"
 	set fout [expr $fosc/[dict get $sol n1_hs]/[dict get $sol n1_ls]]
 	puts "check FOUT $FOUT fout [format %.2e $fout] err: [expr $fout-$FOUT]"
 }
