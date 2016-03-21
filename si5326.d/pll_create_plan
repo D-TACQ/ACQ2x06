@@ -139,9 +139,51 @@ proc showSolution {solution} {
 	puts "check FOUT $FOUT fout [format %.3e $fout] err: [format %.3f [pc_error $fout $FOUT]] %"
 }
 
+proc putBW {solution} {
+	puts [format "%d 0x%02x" 2 0x42]
+}
+proc putN2 {solution} {
+	upvar $solution sol
+
+	set n2_hs [dict get $sol n2_hs]
+	set n2_ls [expr [dict get $sol n2_ls] - 1]
+	
+	puts [format "%d 0x%02x" 40 [expr ($n2_hs-4) << 4 | $n2_ls >> 16]]
+	puts [format "%d 0x%02x" 41 [expr ($n2_ls>>8) & 0x00ff]]
+	puts [format "%d 0x%02x" 42 [expr $n2_ls & 0x0ff]]
+}
+
+
+proc putN31 {solution} {
+	upvar $solution sol
+	set n31 [expr [dict get $sol n3] - 1]
+	
+	puts [format "%d 0x%02x" 43 [expr $n31 >> 16]]
+	puts [format "%d 0x%02x" 44 [expr ($n31 >> 8) & 0x0ff]]
+	puts [format "%d 0x%02d" 45 [expr $n31 & 0x0ff]];
+}
+
+proc putN1 {solution} {
+	upvar $solution sol
+	set n1_hs [dict get $sol n1_hs]
+	set n1_ls [expr [dict get $sol n1_ls] - 1]	
+	
+	puts [format "%d 0x%02x" 25 [expr ($n1_hs - 4) << 5]]
+	puts [format "%d 0x%02x" 31 [expr ($n1_ls >> 16) & 0x0ff]]
+	puts [format "%d 0x%02x" 32 [expr ($n1_ls >> 8) & 0x0ff]]
+	puts [format "%d 0x%02x" 33 [expr $n1_ls & 0x0ff]]
+}
+
+proc putICAL {solution} {
+	puts [format "%d 0x%02x" 136 0x40]
+}
 proc dumpSolution {solution} {
 	upvar $solution sol
-	
+	putBW sol
+	putN1 sol
+	putN2 sol
+	putN31 sol
+	putICAL sol
 }
 
 foreach n1_hs $N1_HS {
