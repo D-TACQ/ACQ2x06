@@ -24,5 +24,5 @@ if {[string first e $FOUT] == -1} {
 	set FOUT [expr $FOUT * 1000]
 }
 
-exec pll_create_plan $FIN $FOUT | load.si5326 -calc
+exec pll_create_plan $FIN $FOUT | load.si5326 -[format %.2e $FIN]--[format %.2e $FOUT] 
 exec pll_create_plan 33.333e6 66.22e6 | grep err: >/dev/shm/mb_clock
