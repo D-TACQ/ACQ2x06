@@ -1,4 +1,4 @@
-#!/usr/bin/expect
+#!/usr/local/bin/expect
 
 
 set FIN [lindex $argv 0]
