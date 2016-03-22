@@ -1,0 +1,28 @@
+#!/usr/local/bin/expect
+# usage mb_clk fin fout
+
+if {$argc == 0} {
+        if {[catch {set SF [open /dev/shm/mb_clock r]} ]} {
+                puts "not set"
+        } else {
+                gets $SF line
+                puts $line
+        }
+        return 0
+} elseif {$argc != 2} {
+	puts "Usage: set_mb_clk fin_kHz fout_kHz"
+        return 1
+}
+# if numbers are exp notation, assume Hz, else kHz
+set FIN [lindex $argv 0]
+set FOUT [lindex $argv 1]
+
+if {[string first e $FIN] == -1} {
+	set FIN [expr $FIN * 1000]
+}
+if {[string first e $FOUT] == -1} {
+	set FOUT [expr $FOUT * 1000]
+}
+
+exec pll_create_plan $FIN $FOUT | load.si5326 -
+exec pll_create_plan 33.333e6 66.22e6 | grep err: >/dev/shm/mb_clock

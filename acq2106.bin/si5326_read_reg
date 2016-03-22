@@ -1,0 +1,6 @@
+#!/bin/sh
+REG=${1:-0}
+
+echo $REG >  /sys/bus/i2c/devices/1-0068/si5326_reg
+awk '{ print "0x"$2 }' < /sys/bus/i2c/devices/1-0068/si5326_reg
+

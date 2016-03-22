@@ -18,7 +18,7 @@ if [ $(cat /dev/gpio/MGT_PRESENT) -gt 0 ]; then
 	nice daemon /usr/local/bin/sfpmon
 fi
 ln -s /usr/local/bin/set.fpmux /etc/acq400/0/fpmux
-ln -s /usr/local/bin/mb_clk /etc/acq400/0/mb_clk
+ln -s /usr/local/bin/acq2106.mb_clk /etc/acq400/0/mb_clk
 load.si5326 si5326_1-1_bypass.txt
 set.fpmux off
 

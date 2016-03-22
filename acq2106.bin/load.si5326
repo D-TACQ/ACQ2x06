@@ -31,7 +31,7 @@ proc read_reg {reg} {
 
 proc process {kv} {
 	if {[regexp {([0-9]+) 0x([0-9A-Fa-f]+)} $kv dontcare key value]} {
-		puts "key $key value 0x$value"
+#		puts "key $key value 0x$value"
 		write_reg $key 0x$value
 	} elseif {[regexp {([0-9]+), ([0-9A-F]+)h} $kv dontcare key value]} {
 #		puts "key $key value $value"
