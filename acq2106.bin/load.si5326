@@ -73,7 +73,7 @@ foreach arg $::argv {
 }
 
 
-if {[string match - $regmap]} {
+if {[string first - $regmap] >= 0} {
 	set fin stdin
 } else {
 	if {![file exists $regmap]} {
