@@ -173,6 +173,15 @@ proc putN1 {solution} {
 	puts [format "%d 0x%02x" 31 [expr ($n1_ls >> 16) & 0x0ff]]
 	puts [format "%d 0x%02x" 32 [expr ($n1_ls >> 8) & 0x0ff]]
 	puts [format "%d 0x%02x" 33 [expr $n1_ls & 0x0ff]]
+
+	set n12_ls $n1_ls
+# CLK2 could be another freq. But it works a lot better IF it's the same ..	
+#	set fosc [dict get $sol fosc]
+#	set n12_ls [expr ($fosc/1000000/$n1_hs) | 0x1]
+	
+	puts [format "%d 0x%02x" 34 [expr ($n12_ls >> 16) & 0x0ff]]
+	puts [format "%d 0x%02x" 35 [expr ($n12_ls >> 8) & 0x0ff]]
+ 	puts [format "%d 0x%02x" 36 [expr $n12_ls & 0x0ff]]	
 }
 
 proc putICAL {solution} {
