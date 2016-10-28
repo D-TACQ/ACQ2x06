@@ -1,16 +1,15 @@
 #!/bin/sh
 # set.si5326.bypass
-plan=si5326_33M333-80M.txt
 
 if [ "x$1" = "x1" ]; then
 	plan=si5326_1-1_bypass.txt
 elif [ "x$1" = "x0" ]; then
-	;
+	plan=si5326_33M333-80M.txt
 elif [ "x$1" != "x" ]; then
 	if [ -e $1 ]; then
 		plan=$1
 	elif [ -e /etc/si5326.d/$1 ]; then
-		plan= /etc/si5326.d/$1
+		plan=/etc/si5326.d/$1
 	else
 		echo ERROR plan $1 does not exist
 		exit 1
