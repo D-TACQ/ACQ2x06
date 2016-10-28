@@ -1,6 +1,13 @@
 #!/bin/sh
 
+if [ -e /mnt/local/sysconfig/milo ]; then
+	/mnt/local/sysconfig/milo
+	exit 0
+fi
+
+
 cd /usr/local/lib/modules
+
 
 
 for MOD in mfd-core.ko lp3943.ko gpio-lp3943.ko pwm-lp3943.ko
