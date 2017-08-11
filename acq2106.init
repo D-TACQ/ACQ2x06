@@ -5,10 +5,10 @@
 if [ $(cat /dev/gpio/MGT_PRESENT) -gt 0 ]; then
 	case $(cat /etc/acq400/0/MODEL) in
 	acq2106)
-		S7=7
+		S7=C
 		/usr/local/init/mgt.init;;
 	acq2106sfp)
-		S7=7
+		S7=C
 		/usr/local/init/mgt482.init;;
 	esac
 fi
