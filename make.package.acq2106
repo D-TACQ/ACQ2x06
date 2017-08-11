@@ -28,7 +28,7 @@ cp load.milo opkg/usr/local/bin
 cp ${MODEL}_init_gpio opkg/usr/local/bin
 cp ${MODEL}.map   opkg/usr/local/
 cp ${MODEL}.init opkg/usr/local/init
-cp mgt mgt482.init opkg/usr/local/init
+cp mgt.init mgt482.init opkg/usr/local/init
 cp si5326.d/* opkg/etc/si5326.d
 
 
