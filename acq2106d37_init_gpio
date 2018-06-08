@@ -1,0 +1,39 @@
+init_acq2106d37_leds() {
+# LP3943ISQ
+	
+	LEDSCHIP=$(getchip 1-0061)
+	if [ $? -eq 0 ]; then
+		echo +++ D37 LEDSCHIP FOUND $LEDSCHIP
+
+		let LED0=${LEDSCHIP#gpiochip*}
+# LED0 : PWM NOT GPIO 
+		let LED01=$LED0
+		let LED1=$LED0+15
+
+#		echo ++++ LED01 $LED01 LED1 $LED1
+	
+		for pin in $(seq $LED01 $LED1)
+		do
+			export_gpio $pin
+			setO gpio${pin}
+		done
+
+		mklnrm $(gpioLED $LED0 0)  LED/FMC1_G 	AL
+		mklnrm $(gpioLED $LED0 1)  LED/FMC3_G 	AL
+		mklnrm $(gpioLED $LED0 2)  LED/FMC5_G	    AL
+		mklnrm $(gpioLED $LED0 3)  LED/FMC1_R 	AL
+		mklnrm $(gpioLED $LED0 4)  LED/FMC3_R 	AL
+		mklnrm $(gpioLED $LED0 5)  LED/FMC5_R 	AL
+		mklnrm $(gpioLED $LED0 6)  LED/ACT_G	 	AL
+		mklnrm $(gpioLED $LED0 7)  LED/ACT_R	 	AL
+		mklnrm $(gpioLED $LED0 8)  LED/CLK_G 		AL
+		mklnrm $(gpioLED $LED0 9)  LED/CLK_R 		AL
+		mklnrm $(gpioLED $LED0 10) LED/TRG_G	 	AL
+		mklnrm $(gpioLED $LED0 11) LED/TRG_R	 	AL
+		
+		mklnrm $(gpioLED $LED0 15) LED/FPGA_DONE	AL
+
+	fi					
+}
+
+init_acq2106d37_leds

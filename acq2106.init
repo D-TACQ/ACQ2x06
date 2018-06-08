@@ -2,6 +2,7 @@
 
 /usr/local/bin/load.milo
 /usr/local/bin/acq2106_init_gpio
+
 if [ $(cat /dev/gpio/MGT_PRESENT) -gt 0 ]; then
 	case $(cat /etc/acq400/0/MODEL) in
 	acq2106)
@@ -18,6 +19,9 @@ mkdir -p /dev/acq2006/
 ln -s /sys/bus/i2c/devices/1-0050/wiper /dev/acq2006/vap
 ln -s /sys/bus/i2c/devices/1-0051/wiper /dev/acq2006/van
 FMC_SCAN_FPGA=ACQ2106 FMC_SCAN_SITES="1 2 3 4 5 6 $S7" /usr/local/bin/fmc-scan
+
+# /dev/gpio/LED/FPGA_DONE : present on d37 and later front panels
+[ -e /dev/gpio/LED/FPGA_DONE ] && echo 1 > /dev/gpio/LED/FPGA_DONE
 
 if [ -e /etc/acq400/C/MTYPE ] && [ "x$(cat /etc/acq400/C/MTYPE)" = "x90" ]; then
 	/usr/local/init/mgt482.init tx_enable
