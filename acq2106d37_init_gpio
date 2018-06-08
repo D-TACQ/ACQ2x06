@@ -33,6 +33,7 @@ init_acq2106d37_leds() {
 		
 		mklnrm $(gpioLED $LED0 15) LED/FPGA_DONE	AL
 
+		echo 1 > /dev/shm/is_d37
 	fi					
 }
 
