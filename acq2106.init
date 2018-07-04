@@ -3,6 +3,11 @@
 /usr/local/bin/load.milo
 /usr/local/bin/acq2106_init_gpio
 
+# set a high default fan. can be overridden in acq400.sh
+FANSPEED=75
+[ -e /mnt/local/sysconfig/acq400.sh ] && source /mnt/local/sysconfig/acq400.sh
+set.fanspeed $FANSPEED
+
 if [ $(cat /dev/gpio/MGT_PRESENT) -gt 0 ]; then
 	case $(cat /etc/acq400/0/MODEL) in
 	acq2106)
