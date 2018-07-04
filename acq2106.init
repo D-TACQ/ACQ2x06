@@ -6,6 +6,7 @@
 # set a high default fan. can be overridden in acq400.sh
 FANSPEED=75
 [ -e /mnt/local/sysconfig/acq400.sh ] && source /mnt/local/sysconfig/acq400.sh
+echo set.fanspeed $FANSPEED
 set.fanspeed $FANSPEED
 
 if [ $(cat /dev/gpio/MGT_PRESENT) -gt 0 ]; then
