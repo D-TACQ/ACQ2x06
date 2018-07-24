@@ -51,8 +51,6 @@ do
 	let ix=$ix+1
 done	
 
-
-nice daemon /usr/local/bin/heartbeat
 # i2c gpio 
 
 

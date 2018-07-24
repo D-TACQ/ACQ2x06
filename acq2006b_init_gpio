@@ -51,7 +51,6 @@ do
 	setO  gpio$pin	
 done
 
-nice daemon /usr/local/bin/heartbeat
 # i2c gpio 
 
 
