@@ -115,6 +115,8 @@ lnAH /dev/gpio/CHIP2/P26/	/dev/gpio/IS_ACQ2006
 lnAL /dev/gpio/CHIP2/P27/	/dev/gpio/IS_RES
 
 
+echo "setting DIST_CLK_HDMI .. Si5326 is the ONLY valid input.."
+set.sys /dev/gpio/CLK/DIST_CLK_HDMI 1
 
 source /usr/local/bin/acq2006_init_gpio_common.sh
 
