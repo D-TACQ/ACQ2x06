@@ -4,6 +4,11 @@ source /usr/local/bin/acq400_init_gpio_common.sh
 
 common_begin
 
+if [ ! -e /sys/bus/i2c/devices/1-0022/gpio/gpiochip* ]; then
+	echo I2C ERROR: unable to continue
+	PS1="$PS1 I2C FAIL #" /bin/sh
+fi
+
 # i2c gpio
 
 # si5326
