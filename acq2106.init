@@ -37,6 +37,7 @@ ln -s /usr/local/bin/set.fpmux /etc/acq400/0/fpmux
 ln -s /usr/local/bin/acq2106.mb_clk /etc/acq400/0/mb_clk
 ln -s /usr/local/bin/set.si5326.bypass /etc/acq400/0/set_si5326_bypass
 load.si5326 si5326_1-1_bypass.txt
+/usr/local/CARE/fix-leds
 set.fpmux off
 
 
