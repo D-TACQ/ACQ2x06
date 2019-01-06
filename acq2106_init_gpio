@@ -13,13 +13,10 @@ fi
 
 # si5326
 mkdir -p /dev/gpio/CLK
-
-
-
 zgpio0=$(get_zynq_gpio0)
-export_gpio_value_ln $(($zpgio+11)) /dev/gpio/CLK/LOL
-export_gpio_value_ln $(($zgpio+14)) /dev/gpio/CLK/C1B
-export_gpio_value_ln $(($zgpio+15)) /dev/gpio/CLK/C2B
+export_gpio_value_ln $(($zgpio0+11)) /dev/gpio/CLK/LOL
+export_gpio_value_ln $(($zgpio0+14)) /dev/gpio/CLK/C1B
+export_gpio_value_ln $(($zgpio0+15)) /dev/gpio/CLK/C2B
 
 
 # main GPIO
