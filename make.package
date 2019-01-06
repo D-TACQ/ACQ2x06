@@ -1,6 +1,7 @@
 #!/bin/bash
 
-(cd ../DRIVERS/ISL22313;./make.zynq)
+
+mkdir -p release
 sudo ./make.package.acq2006
 sudo ./make.package.acq2006b
 sudo ./make.package.acq2106

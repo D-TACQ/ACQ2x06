@@ -1,6 +1,7 @@
 #!/bin/sh
 
-/usr/local/bin/load.milo
+#/usr/local/bin/load.milo
+echo 0 > /sys/class/pwm/pwmchip0/export
 /usr/local/bin/acq2006b_init_gpio
 /sbin/insmod /usr/local/lib/modules/isl22313.ko
 mkdir -p /dev/acq2006/

@@ -7,12 +7,8 @@ MODEL=acq2106
 TOP=..
 
 rm -Rf opkg/*
-mkdir -p opkg/usr/local/bin opkg/usr/local/init opkg/usr/local/lib/modules opkg/usr/local/CARE opkg/etc/si5326.d
+mkdir -p opkg/usr/local/bin opkg/usr/local/init opkg/usr/local/CARE opkg/etc/si5326.d
 
-(cd ../DRIVERS/ISL22313; ./make.zynq)
-cp ../DRIVERS/ISL22313/isl22313.ko opkg/usr/local/lib/modules
-(cd ../DRIVERS/SI5326; ./make.zynq)
-cp ../DRIVERS/SI5326/si5326.ko opkg/usr/local/lib/modules
 cp acq2106.bin/* opkg/usr/local/bin
 
 cp mgt482-lamptest opkg/usr/local/CARE
