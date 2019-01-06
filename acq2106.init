@@ -1,6 +1,8 @@
 #!/bin/sh
 
-/usr/local/bin/load.milo
+#/usr/local/bin/load.milo
+echo 0 > /sys/class/pwm/pwmchip0/export
+
 /usr/local/bin/acq2106_init_gpio
 
 # set a high default fan. can be overridden in acq400.sh

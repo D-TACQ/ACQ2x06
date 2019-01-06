@@ -9,22 +9,13 @@ TOP=..
 rm -Rf opkg/*
 mkdir -p opkg/usr/local/bin opkg/usr/local/init opkg/usr/local/lib/modules opkg/usr/local/CARE opkg/etc/si5326.d
 
-KO="./drivers/gpio/gpio-lp3943.ko\
-	./drivers/mfd/lp3943.ko\
-	./drivers/mfd/mfd-core.ko\
-	./drivers/pwm/pwm-lp3943.ko"
-
-
-for ko in $KO
-do
-	cp ${TOP}/linux-xlnx/$ko opkg/usr/local/lib/modules
-done
+(cd ../DRIVERS/ISL22313; ./make.zynq)
 cp ../DRIVERS/ISL22313/isl22313.ko opkg/usr/local/lib/modules
+(cd ../DRIVERS/SI5326; ./make.zynq)
 cp ../DRIVERS/SI5326/si5326.ko opkg/usr/local/lib/modules
 cp acq2106.bin/* opkg/usr/local/bin
 
 cp mgt482-lamptest opkg/usr/local/CARE
-cp load.milo opkg/usr/local/bin
 cp ${MODEL}_init_gpio opkg/usr/local/bin
 cp acq2106d37_init_gpio opkg/usr/local/bin
 cp ${MODEL}.map   opkg/usr/local/
