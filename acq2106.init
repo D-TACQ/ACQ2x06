@@ -12,14 +12,12 @@ echo set.fanspeed $FANSPEED
 set.fanspeed $FANSPEED
 
 if [ $(cat /dev/gpio/MGT_PRESENT) -gt 0 ]; then
-	case $(cat /etc/acq400/0/MODEL) in
-	acq2106)
-		S7=C
-		/usr/local/init/mgt.init;;
-	acq2106sfp)
-		S7=C
-		/usr/local/init/mgt482.init;;
-	esac
+	S7=C
+	if [ -e /sys/bus/i2c/devices/8-0054/eeprom ]; then
+		/usr/local/init/mgt482.init
+	else
+		/usr/local/init/mgt.init
+	fi
 fi
 /sbin/insmod /usr/local/lib/modules/isl22313.ko
 /sbin/insmod /usr/local/lib/modules/si5326.ko
