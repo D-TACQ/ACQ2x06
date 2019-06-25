@@ -66,12 +66,12 @@ if [ "x$FPCHIP1" != "x" ]; then
 	mkdir /dev/gpio/FPCHIP1
 	let p00=${FPCHIP1#gpiochip*}
 	for pin in 8 9 10 11 15; do
-		gp=$(($p00+$pin))
+		let gp="$p00+$pin"
 		export_gpio_value_ln ${gp} /dev/gpio/FPCHIP1/$(printf %02d $pin)
 		setO gpio${gp}
 	done
 	for pin in 12 13 14; do
-		gp=$(($p00+$pin))
+		let gp="$p00+$pin"
 		export_gpio_value_ln ${gp} /dev/gpio/FPCHIP1/$(printf %02d $pin)
 	done
 	echo +++ FP MODEL CODE $(cat /dev/gpio/FPCHIP1/1[234])
@@ -164,16 +164,15 @@ set.sys /dev/gpio/CLK/DIST_CLK_HDMI 1
 MODEL=$(cat /proc/device-tree/chosen/model)
 if [ "{$MODEL#*d37}" != "$MODEL" ]; then
 	+++ init D37 LEDS
-	ledschip=1-0061
-	init_acq2106_leds $(getchip )
+	ledschip=FPCHIP1
 elif [ "x$FPCHIP2" != "x" ]; then
 	+++ init FPLEDS 
-	ledschip=1-0062
+	ledschip=$FPCHIP2
 else
 	+++ init BPLEDS
-	ledschip=1-0060
+	ledschip=$PWMCHIP
 fi
-init_acq2106_leds $(getchip $LEDSCHIP)
+init_acq2106_leds $ledschip
 common_end
 echo "++ acq2106b_init_gpio done"
 

@@ -88,6 +88,7 @@ lp3943_exists() {
 	fi
 }
 
+PWMCHIP=$(getchip 1-0060)
 FPCHIP1=$(getchip 1-0061)
 FPCHIP2=$(getchip 1-0062)
 
