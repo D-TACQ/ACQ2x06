@@ -5,6 +5,7 @@ init_acq2106_leds() {
 	if [ $? -eq 0 ]; then
 		echo +++ LEDSCHIP FOUND $LEDSCHIP
 
+		cd /sys/class/gpio
 		let LED0=${LEDSCHIP#gpiochip*}
 # LED0 : PWM NOT GPIO 
 		let LED01=$LED0+1
