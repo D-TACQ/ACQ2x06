@@ -80,10 +80,9 @@ fi
 if [ "x$FPCHIP2 != "x" ; then
 	echo +++ FPCHIP2 FOUND $FPCHIP2
 	mkdir /dev/gpio/FPCHIP2
-	let p00=${FPCHIP1#gpiochip*}
-	let p15=$(($p00
+	let p00=${FPCHIP1#gpiochip*}	
 	for pin in $(seq 0 15); do
-		gp=$(($p00+$pin))
+		let gp="$p00+$pin"
 		export_gpio_value_ln ${gp} /dev/gpio/FPCHIP2/$(printf %02d $pin)
 		setO gpio${gp}
 	done
@@ -173,6 +172,9 @@ else
 	ledschip=$PWMCHIP
 fi
 init_acq2106_leds $ledschip
+
+acq2006_create_pwm
+
 common_end
 echo "++ acq2106b_init_gpio done"
 

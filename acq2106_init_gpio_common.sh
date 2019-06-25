@@ -19,7 +19,7 @@ init_acq2106_leds() {
 
 		mkln $(gpioLED $LED0 1)  LED/FMC1_G 	AL
 		mkln $(gpioLED $LED0 2)  LED/FMC2_G 	AL
-		mkln $(gpioLED $LED0 3)  LED/FMC3_G	AL
+		mkln $(gpioLED $LED0 3)  LED/FMC3_G	    AL
 		mkln $(gpioLED $LED0 4)  LED/FMC4_G 	AL
 		mkln $(gpioLED $LED0 5)  LED/FMC5_G 	AL
 		mkln $(gpioLED $LED0 6)  LED/FMC6_G 	AL
@@ -91,6 +91,3 @@ lp3943_exists() {
 PWMCHIP=$(getchip 1-0060)
 FPCHIP1=$(getchip 1-0061)
 FPCHIP2=$(getchip 1-0062)
-
-
-acq2006_create_pwm
