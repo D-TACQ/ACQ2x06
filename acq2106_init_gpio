@@ -77,7 +77,7 @@ if [ "x$FPCHIP1" != "x" ]; then
 	echo +++ FP MODEL CODE $(cat /dev/gpio/FPCHIP1/1[234])
 fi
 
-if [ "x$FPCHIP2 != "x" ; then
+if [ "x$FPCHIP2" != "x" ]; then
 	echo +++ FPCHIP2 FOUND $FPCHIP2
 	mkdir /dev/gpio/FPCHIP2
 	let p00=${FPCHIP1#gpiochip*}	
