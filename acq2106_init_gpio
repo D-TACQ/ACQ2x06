@@ -71,7 +71,7 @@ if [ "x$FPCHIP1" != "x" ]; then
 		setO gpio${gp}
 	done
 	for pin in 12 13 14; do
-		gp=$(($p00+$pin)
+		gp=$(($p00+$pin))
 		export_gpio_value_ln ${gp} /dev/gpio/FPCHIP1/$(printf %02d $pin)
 	done
 	echo +++ FP MODEL CODE $(cat /dev/gpio/FPCHIP1/1[234])
