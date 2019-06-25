@@ -161,7 +161,7 @@ set.sys /dev/gpio/CLK/DIST_CLK_HDMI 1
 
 
 MODEL=$(cat /proc/device-tree/chosen/model)
-if [ "${$MODEL#*d37}" != "$MODEL" ]; then
+if [ "${MODEL#*d37}" != "$MODEL" ]; then
 	echo "+++ init D37 LEDS"
 	ledschip=$FPCHIP1
 elif [ "x$FPCHIP2" != "x" ]; then
