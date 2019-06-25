@@ -59,7 +59,35 @@ done
 
 # i2c gpio 
 
+source /usr/local/bin/acq2106_init_gpio_common.sh
 
+if [ "x$FPCHIP1" != "x" ]; then
+	echo +++ FPCHIP1 FOUND $FPCHIP1
+	mkdir /dev/gpio/FPCHIP1
+	let p00=${FPCHIP1#gpiochip*}
+	for pin in 8 9 10 11 15; do
+		gp=$(($p00+$pin))
+		export_gpio_value_ln ${gp} /dev/gpio/FPCHIP1/$(printf %02d $pin)
+		setO gpio${gp}
+	done
+	for pin in 12 13 14; do
+		gp=$(($p00+$pin)
+		export_gpio_value_ln ${gp} /dev/gpio/FPCHIP1/$(printf %02d $pin)
+	done
+	echo +++ FP MODEL CODE $(cat /dev/gpio/FPCHIP1/1[234])
+fi
+
+if [ "x$FPCHIP2 != "x" ; then
+	echo +++ FPCHIP2 FOUND $FPCHIP2
+	mkdir /dev/gpio/FPCHIP2
+	let p00=${FPCHIP1#gpiochip*}
+	let p15=$(($p00
+	for pin in $(seq 0 15); do
+		gp=$(($p00+$pin))
+		export_gpio_value_ln ${gp} /dev/gpio/FPCHIP2/$(printf %02d $pin)
+		setO gpio${gp}
+	done
+fi
 
 mkdir -p /dev/gpio/CLK/MB/
 lnAH /dev/gpio/CHIP1/P00 /dev/gpio/CLK/OE_CLK1_ELF1
@@ -109,11 +137,17 @@ lnALO /dev/gpio/CHIP2/P15	/dev/gpio/CLK/FP_OE
 lnALO /dev/gpio/CHIP2/P16	/dev/gpio/CLK/Si570_OE
 lnALO /dev/gpio/CHIP2/P17	/dev/gpio/15VA_EN
 
-
+if [ "x$FPCHIP1" = "x" ]; then 
 lnALO /dev/gpio/CHIP2/P20	/dev/gpio/LED/CLK_G
 lnALO /dev/gpio/CHIP2/P21	/dev/gpio/LED/CLK_R
 lnALO /dev/gpio/CHIP2/P22	/dev/gpio/LED/TRG_G
 lnALO /dev/gpio/CHIP2/P23	/dev/gpio/LED/TRG_R
+else
+lnALO /dev/gpio/FPCHIP1/P08	/dev/gpio/LED/CLK_G
+lnALO /dev/gpio/FPCHIP1/P09	/dev/gpio/LED/CLK_R
+lnALO /dev/gpio/FPCHIP1/P10	/dev/gpio/LED/TRG_G
+lnALO /dev/gpio/FPCHIP1/P11	/dev/gpio/LED/TRG_R	
+fi
 
 lnAH /dev/gpio/CHIP2/P24/	/dev/gpio/IS_ACQ2206
 lnAL /dev/gpio/CHIP2/P25/	/dev/gpio/IS_REVB
@@ -124,9 +158,19 @@ lnAL /dev/gpio/CHIP2/P27/	/dev/gpio/IS_RES
 echo "setting DIST_CLK_HDMI .. Si5326 is the ONLY valid input.."
 set.sys /dev/gpio/CLK/DIST_CLK_HDMI 1
 
-source /usr/local/bin/acq2006_init_gpio_common.sh
 
-source /usr/local/bin/acq2106d37_init_gpio
+
+
+MODEL=$(cat /proc/device-tree/chosen/model)
+if [ "{$MODEL#*d37}" != "$MODEL" ]; then
+	source /usr/local/CARE/acq2106_init_gpio.sh
+elif [ "x$FPCHIP2" != "x" ]; then
+	+++ init FPLEDS 
+	init_acq2106_leds $(getchip 1-0062)
+else
+	+++ init BPLEDS
+	init_acq2106_leds $(getchip 1-0060)
+fi
 common_end
 echo "++ acq2106b_init_gpio done"
 

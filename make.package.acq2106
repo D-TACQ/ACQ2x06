@@ -13,7 +13,8 @@ cp acq2106.bin/* opkg/usr/local/bin
 
 cp mgt482-lamptest opkg/usr/local/CARE
 cp ${MODEL}_init_gpio opkg/usr/local/bin
-cp acq2106d37_init_gpio opkg/usr/local/bin
+cp acq2106d37_init_gpio.sh opkg/usr/local/CARE
+cp acq2106_init_gpio_common.sh opkg/usr/local/CARE
 cp ${MODEL}.map   opkg/usr/local/
 cp ${MODEL}.init opkg/usr/local/init
 cp mgt.init mgt482.init opkg/usr/local/init
