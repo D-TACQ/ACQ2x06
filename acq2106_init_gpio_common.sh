@@ -1,8 +1,9 @@
+
 init_acq2106_leds() {
 	let px=1
 	for led in FMC1_G FMC2_G FMC3_G FMC4_G FMC5_G FMC6_G \
 			   FMC1_R FMC2_R FMC3_R FMC4_R FMC5_R FMC6_R \
-			   ACT_G  ACT_R
+			   ACT_G  ACT_R FPGA_DONE
 	do		
 		ln -s /dev/gpio/$1/$(printf P%02d $px)/value /dev/gpio/LED/$led
 		let px=$px+1	
@@ -15,11 +16,13 @@ init_acq2106d37_leds() {
 			   FMC1_R FMC3_R FMC5_R \
 			   ACT_G ACT_R CLK_G CLK_R TRG_G TRG_R   
     do
-    	mklnrm /dev/gpio/$1/$(printf P%02d $px)/value LED/$led
+    	rm -f /dev/gpio/LED/$led
+    	ln -s /dev/gpio/$1/$(printf P%02d $px)/value /dev/gpio/LED/$led
         let px=$px+1
 	done
 	
-	mklnrm /dev/gpio/$1/$(printf P%02d 15)/value LED/FPGA_DONE
+	rm -f /dev/gpio/LED/FPGA_DONE
+	ln -s /dev/gpio/$1/$(printf P%02d 15)/value /dev/gpio/LED/FPGA_DONE
     echo 1 > /dev/shm/is_d37
 }
 
