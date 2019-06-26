@@ -61,31 +61,55 @@ done
 
 source /usr/local/CARE/acq2106_init_gpio_common.sh
 
+if [ "x$PWMCHIP" != "x" ]; then
+	echo +++ PWMCHIP FOUND $PWMCHIP
+	mkdir /dev/gpio/PWMCHIP
+	let p00=${PWMCHIP#gpiochip*}
+	let ix=1
+#        	 P00010203040506070809101112131415
+	for dir in   O O O O O O O O O O O O O O
+	do	
+		let pin="$p00+$ix"
+		export_gpio $pin
+		ln -s /sys/class/gpio/gpio$pin /dev/gpio/PWMCHIP/$(printf P%02d $ix)
+		[ "$dir" = "O" ] && setOAL gpio$pin
+		let ix="$ix+1"
+	done
+	echo +++ PWMCHIP 99	
+fi
+
 if [ "x$FPCHIP1" != "x" ]; then
 	echo +++ FPCHIP1 FOUND $FPCHIP1
 	mkdir /dev/gpio/FPCHIP1
 	let p00=${FPCHIP1#gpiochip*}
-	for pin in 8 9 10 11 15; do
-		let gp="$p00+$pin"
-		export_gpio_value_ln ${gp} /dev/gpio/FPCHIP1/$(printf %02d $pin)
-		setO gpio${gp}
+	let ix=0
+#        	 P00010203040506070809101112131415
+	for dir in O O O O O O O O O O O O I I I O
+	do		
+		let pin="$p00+$ix"
+		export_gpio $pin
+		ln -s /sys/class/gpio/gpio$pin /dev/gpio/FPCHIP1/$(printf P%02d $ix)
+		[ "$dir" = "O" ] && setOAL gpio$pin
+		let ix="$ix+1"		
 	done
-	for pin in 12 13 14; do
-		let gp="$p00+$pin"
-		export_gpio_value_ln ${gp} /dev/gpio/FPCHIP1/$(printf %02d $pin)
-	done
-	echo +++ FP MODEL CODE $(cat /dev/gpio/FPCHIP1/1[234])
+	echo +++ FP MODEL CODE $(cat /dev/gpio/FPCHIP1/P1[234]/value)
 fi
 
 if [ "x$FPCHIP2" != "x" ]; then
 	echo +++ FPCHIP2 FOUND $FPCHIP2
 	mkdir /dev/gpio/FPCHIP2
-	let p00=${FPCHIP1#gpiochip*}	
-	for pin in $(seq 0 15); do
-		let gp="$p00+$pin"
-		export_gpio_value_ln ${gp} /dev/gpio/FPCHIP2/$(printf %02d $pin)
-		setO gpio${gp}
+	let p00=${FPCHIP2#gpiochip*}
+	let ix=0
+#        	 P00010203040506070809101112131415
+	for dir in O O O O O O O O O O O O O O O O
+	do	
+		let pin="$p00+$ix"
+		export_gpio $pin
+		ln -s /sys/class/gpio/gpio$pin /dev/gpio/FPCHIP2/$(printf P%02d $ix)
+		[ "$dir" = "O" ] && setOAL gpio$pin
+		let ix="$ix+1"
 	done
+	echo +++ FPCHIP2 99
 fi
 
 mkdir -p /dev/gpio/CLK/MB/
@@ -142,10 +166,12 @@ lnALO /dev/gpio/CHIP2/P21	/dev/gpio/LED/CLK_R
 lnALO /dev/gpio/CHIP2/P22	/dev/gpio/LED/TRG_G
 lnALO /dev/gpio/CHIP2/P23	/dev/gpio/LED/TRG_R
 else
+echo FPCHIP1 special
 lnALO /dev/gpio/FPCHIP1/P08	/dev/gpio/LED/CLK_G
 lnALO /dev/gpio/FPCHIP1/P09	/dev/gpio/LED/CLK_R
 lnALO /dev/gpio/FPCHIP1/P10	/dev/gpio/LED/TRG_G
-lnALO /dev/gpio/FPCHIP1/P11	/dev/gpio/LED/TRG_R	
+lnALO /dev/gpio/FPCHIP1/P11	/dev/gpio/LED/TRG_R
+echo FPCHIP1 special99	
 fi
 
 lnAH /dev/gpio/CHIP2/P24/	/dev/gpio/IS_ACQ2206
@@ -157,21 +183,17 @@ lnAL /dev/gpio/CHIP2/P27/	/dev/gpio/IS_RES
 echo "setting DIST_CLK_HDMI .. Si5326 is the ONLY valid input.."
 set.sys /dev/gpio/CLK/DIST_CLK_HDMI 1
 
-
-
-
 MODEL=$(cat /proc/device-tree/chosen/model)
 if [ "${MODEL#*d37}" != "$MODEL" ]; then
 	echo "+++ init D37 LEDS"
-	ledschip=$FPCHIP1
+	init_acq2106_leds FPCHIP1
 elif [ "x$FPCHIP2" != "x" ]; then
 	echo "+++ init FPLEDS" 
-	ledschip=$FPCHIP2
+	init_acq2106_leds FPCHIP2
 else
 	echo "+++ init BPLEDS"
-	ledschip=$PWMCHIP
+	init_acq2106_leds PWMCHIP
 fi
-init_acq2106_leds $ledschip
 
 acq2006_create_pwm
 
