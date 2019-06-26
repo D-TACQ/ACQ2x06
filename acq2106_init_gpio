@@ -61,7 +61,7 @@ done
 
 source /usr/local/CARE/acq2106_init_gpio_common.sh
 
-if [ "x$PWMCHIP" != "x" ]; then
+if $HAS_PWMCHIP; then
 	echo +++ PWMCHIP FOUND $PWMCHIP
 	mkdir /dev/gpio/PWMCHIP
 	let p00=${PWMCHIP#gpiochip*}
@@ -78,38 +78,57 @@ if [ "x$PWMCHIP" != "x" ]; then
 	echo +++ PWMCHIP 99	
 fi
 
-if [ "x$FPCHIP1" != "x" ]; then
-	echo +++ FPCHIP1 FOUND $FPCHIP1
-	mkdir /dev/gpio/FPCHIP1
-	let p00=${FPCHIP1#gpiochip*}
-	let ix=0
-#        	 P00010203040506070809101112131415
-	for dir in O O O O O O O O O O O O I I I O
-	do		
-		let pin="$p00+$ix"
-		export_gpio $pin
-		ln -s /sys/class/gpio/gpio$pin /dev/gpio/FPCHIP1/$(printf P%02d $ix)
-		[ "$dir" = "O" ] && setOAL gpio$pin
-		let ix="$ix+1"		
-	done
-	echo +++ FP MODEL CODE $(cat /dev/gpio/FPCHIP1/P1[234]/value)
-fi
-
-if [ "x$FPCHIP2" != "x" ]; then
-	echo +++ FPCHIP2 FOUND $FPCHIP2
-	mkdir /dev/gpio/FPCHIP2
-	let p00=${FPCHIP2#gpiochip*}
-	let ix=0
-#        	 P00010203040506070809101112131415
-	for dir in O O O O O O O O O O O O O O O O
-	do	
-		let pin="$p00+$ix"
-		export_gpio $pin
-		ln -s /sys/class/gpio/gpio$pin /dev/gpio/FPCHIP2/$(printf P%02d $ix)
-		[ "$dir" = "O" ] && setOAL gpio$pin
-		let ix="$ix+1"
-	done
-	echo +++ FPCHIP2 99
+if $HAS_D37; then
+	if $HAS_FPCHIP1; then
+		echo +++ FPCHIP1 FOUND $FPCHIP1
+		mkdir /dev/gpio/FPCHIP1
+		let p00=${FPCHIP1#gpiochip*}
+		let ix=0
+	#        	 P00010203040506070809101112131415
+		for dir in O O O O O O O O O O O O O O O O
+		do	
+			let pin="$p00+$ix"
+			export_gpio $pin
+			ln -s /sys/class/gpio/gpio$pin /dev/gpio/FPCHIP1/$(printf P%02d $ix)
+			[ "$dir" = "O" ] && setOAL gpio$pin
+			let ix="$ix+1"
+		done
+		echo +++ FPCHIP1 99
+	fi	
+else
+	if $HAS_FPCHIP1; then
+		echo +++ FPCHIP1 FOUND $FPCHIP1
+		mkdir /dev/gpio/FPCHIP1
+		let p00=${FPCHIP1#gpiochip*}
+		let ix=0
+	#        	 P00010203040506070809101112131415
+		for dir in O O O O O O O O O O O O I I I O
+		do		
+			let pin="$p00+$ix"
+			export_gpio $pin
+			ln -s /sys/class/gpio/gpio$pin /dev/gpio/FPCHIP1/$(printf P%02d $ix)
+			[ "$dir" = "O" ] && setOAL gpio$pin
+			let ix="$ix+1"		
+		done
+		echo +++ FP MODEL CODE $(cat /dev/gpio/FPCHIP1/P1[234]/value)
+	fi
+	
+	if $HAS_FPCHIP2; then
+		echo +++ FPCHIP2 FOUND $FPCHIP2
+		mkdir /dev/gpio/FPCHIP2
+		let p00=${FPCHIP2#gpiochip*}
+		let ix=0
+	#        	 P00010203040506070809101112131415
+		for dir in O O O O O O O O O O O O O O O O
+		do	
+			let pin="$p00+$ix"
+			export_gpio $pin
+			ln -s /sys/class/gpio/gpio$pin /dev/gpio/FPCHIP2/$(printf P%02d $ix)
+			[ "$dir" = "O" ] && setOAL gpio$pin
+			let ix="$ix+1"
+		done
+		echo +++ FPCHIP2 99
+	fi
 fi
 
 mkdir -p /dev/gpio/CLK/MB/
@@ -160,18 +179,18 @@ lnALO /dev/gpio/CHIP2/P15	/dev/gpio/CLK/FP_OE
 lnALO /dev/gpio/CHIP2/P16	/dev/gpio/CLK/Si570_OE
 lnALO /dev/gpio/CHIP2/P17	/dev/gpio/15VA_EN
 
-if [ "x$FPCHIP1" = "x" ]; then 
-lnALO /dev/gpio/CHIP2/P20	/dev/gpio/LED/CLK_G
-lnALO /dev/gpio/CHIP2/P21	/dev/gpio/LED/CLK_R
-lnALO /dev/gpio/CHIP2/P22	/dev/gpio/LED/TRG_G
-lnALO /dev/gpio/CHIP2/P23	/dev/gpio/LED/TRG_R
+if $HAS_FPCHIP1 && $HAS_FPCHIP2; then
+	echo FPCHIP1 special
+	lnALO /dev/gpio/FPCHIP1/P08	/dev/gpio/LED/CLK_G
+	lnALO /dev/gpio/FPCHIP1/P09	/dev/gpio/LED/CLK_R
+	lnALO /dev/gpio/FPCHIP1/P10	/dev/gpio/LED/TRG_G
+	lnALO /dev/gpio/FPCHIP1/P11	/dev/gpio/LED/TRG_R
+	echo FPCHIP1 special99	
 else
-echo FPCHIP1 special
-lnALO /dev/gpio/FPCHIP1/P08	/dev/gpio/LED/CLK_G
-lnALO /dev/gpio/FPCHIP1/P09	/dev/gpio/LED/CLK_R
-lnALO /dev/gpio/FPCHIP1/P10	/dev/gpio/LED/TRG_G
-lnALO /dev/gpio/FPCHIP1/P11	/dev/gpio/LED/TRG_R
-echo FPCHIP1 special99	
+	lnALO /dev/gpio/CHIP2/P20	/dev/gpio/LED/CLK_G
+	lnALO /dev/gpio/CHIP2/P21	/dev/gpio/LED/CLK_R
+	lnALO /dev/gpio/CHIP2/P22	/dev/gpio/LED/TRG_G
+	lnALO /dev/gpio/CHIP2/P23	/dev/gpio/LED/TRG_R
 fi
 
 lnAH /dev/gpio/CHIP2/P24/	/dev/gpio/IS_ACQ2206
@@ -184,10 +203,10 @@ echo "setting DIST_CLK_HDMI .. Si5326 is the ONLY valid input.."
 set.sys /dev/gpio/CLK/DIST_CLK_HDMI 1
 
 MODEL=$(cat /proc/device-tree/chosen/model)
-if [ "${MODEL#*d37}" != "$MODEL" ]; then
+if $HAS_D37; then
 	echo "+++ init D37 LEDS"
 	init_acq2106_leds FPCHIP1
-elif [ "x$FPCHIP2" != "x" ]; then
+elif $HAS_FPCHIP2; then
 	echo "+++ init FPLEDS" 
 	init_acq2106_leds FPCHIP2
 else

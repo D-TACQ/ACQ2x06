@@ -55,14 +55,30 @@ acq2006_create_pwm() {
 	fi	
 }
 
-lp3943_exists() {
-	if [ -e /sys/bus/i2c/devices/${1}/lp3943-gpio.* ] ; then
-		echo 1
-	else
-		echo 0
-	fi
-}
 
 PWMCHIP=$(getchip 1-0060)
+if [ "x$PWMCHIP" != "x" ]; then
+	HAS_PWMCHIP=true
+else
+	HAS_PWMCHIP=false
+fi
 FPCHIP1=$(getchip 1-0061)
+if [ "x$FPCHIP1" != "x" ]; then
+	HAS_FPCHIP1=true
+else
+	HAS_FPCHIP1=false
+fi
 FPCHIP2=$(getchip 1-0062)
+if [ "x$FPCHIP2" != "x" ]; then
+	HAS_FPCHIP2=true
+else
+	HAS_FPCHIP2=false
+fi
+
+MODEL=$(cat /proc/device-tree/chosen/model)
+if [ "${MODEL#*d37}" != "$MODEL" ]; then
+	HAS_D37=true
+else
+	HAS_D37=false
+fi
+
