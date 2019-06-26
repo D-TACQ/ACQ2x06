@@ -9,6 +9,20 @@ init_acq2106_leds() {
 	done
 }
 
+init_acq2106d37_leds() {
+    let px=0
+    for led in FMC1_G FMC3_G FMC5_G \
+			   FMC1_R FMC3_R FMC5_R \
+			   ACT_G ACT_R CLK_G CLK_R TRG_G TRG_R   
+    do
+    	mklnrm /dev/gpio/$1/$(printf P%02d $px)/value LED/$led
+        let px=$px+1
+	done
+	
+	mklnrm /dev/gpio/$1/$(printf P%02d 15)/value LED/FPGA_DONE
+    echo 1 > /dev/shm/is_d37
+}
+
 create_set_fanspeed() {
 		# acq2006 only		 
 	cat - >/usr/local/bin/set.fanspeed <<EOF

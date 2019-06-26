@@ -159,8 +159,6 @@ lnAL /dev/gpio/CHIP1/P25 /dev/gpio/SYNC_CABLE_DET
 lnAL /dev/gpio/CHIP1/P26 /dev/gpio/LED/MGT1_G
 lnAL /dev/gpio/CHIP1/P27 /dev/gpio/LED/MGT1_R
 
-echo 1 > /dev/gpio/SYNC_OUT_GPIO_OUT
-
 lnAL /dev/gpio/CHIP2/P00	/dev/gpio/fmc1_present
 lnAL /dev/gpio/CHIP2/P01	/dev/gpio/fmc2_present
 lnAL /dev/gpio/CHIP2/P02	/dev/gpio/fmc3_present
@@ -186,6 +184,8 @@ if $HAS_FPCHIP1 && $HAS_FPCHIP2; then
 	lnALO /dev/gpio/FPCHIP1/P10	/dev/gpio/LED/TRG_G
 	lnALO /dev/gpio/FPCHIP1/P11	/dev/gpio/LED/TRG_R
 	echo FPCHIP1 special99	
+elif $HAS_D37; then
+	echo D37 skip special
 else
 	lnALO /dev/gpio/CHIP2/P20	/dev/gpio/LED/CLK_G
 	lnALO /dev/gpio/CHIP2/P21	/dev/gpio/LED/CLK_R
@@ -198,14 +198,10 @@ lnAL /dev/gpio/CHIP2/P25/	/dev/gpio/IS_REVB
 lnAH /dev/gpio/CHIP2/P26/	/dev/gpio/IS_ACQ2006
 lnAL /dev/gpio/CHIP2/P27/	/dev/gpio/IS_RES
 
-
-echo "setting DIST_CLK_HDMI .. Si5326 is the ONLY valid input.."
-set.sys /dev/gpio/CLK/DIST_CLK_HDMI 1
-
-MODEL=$(cat /proc/device-tree/chosen/model)
 if $HAS_D37; then
 	echo "+++ init D37 LEDS"
-	init_acq2106_leds FPCHIP1
+	init_acq2106_leds PWMCHIP
+	init_acq2106d37_leds FPCHIP1	
 elif $HAS_FPCHIP2; then
 	echo "+++ init FPLEDS" 
 	init_acq2106_leds FPCHIP2
@@ -215,6 +211,10 @@ else
 fi
 
 acq2006_create_pwm
+
+set.sys /dev/gpio/SYNC_OUT_GPIO_OUT 1
+echo "setting DIST_CLK_HDMI .. Si5326 is the ONLY valid input.."
+set.sys /dev/gpio/CLK/DIST_CLK_HDMI 1
 
 common_end
 echo "++ acq2106b_init_gpio done"
