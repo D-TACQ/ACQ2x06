@@ -183,6 +183,7 @@ if $HAS_FPCHIP1 && $HAS_FPCHIP2; then
 	lnALO /dev/gpio/FPCHIP1/P09	/dev/gpio/LED/CLK_R
 	lnALO /dev/gpio/FPCHIP1/P10	/dev/gpio/LED/TRG_G
 	lnALO /dev/gpio/FPCHIP1/P11	/dev/gpio/LED/TRG_R
+	lnALO /dev/gpio/FPCHIP1/P15 /dev/gpio/LED/FPGA_DONE
 	echo FPCHIP1 special99	
 elif $HAS_D37; then
 	echo D37 skip special
