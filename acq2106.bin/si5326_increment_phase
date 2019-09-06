@@ -1,0 +1,38 @@
+#!/usr/local/bin/expect
+
+set outfile "/sys/bus/i2c/devices/1-0068/si5326_reg"
+
+
+proc write_reg {reg value} {
+	global outfile
+	if {$outfile == "-"} {
+		puts "$reg $value"
+	} else {
+		set fout [open $outfile w]
+		puts $fout "$reg $value"
+		close $fout
+	}
+}
+
+proc read_reg {reg} {
+	global outfile
+	if {$outfile == "-"} {
+		puts "$reg"
+	} else {
+		set fout [open $outfile w]
+                puts $fout "$reg"
+                close $fout
+		set fin [open $outfile r]
+		puts [gets $fin]
+		close $fin
+	}
+}
+
+set pinc 0
+
+if { $::argc > 0 } {
+	set pinc [lindex $::argv 0]
+}
+
+puts "si5326_increment_phase $pinc"
+
