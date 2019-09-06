@@ -1,32 +1,49 @@
 #!/usr/local/bin/expect
 
-set outfile "/sys/bus/i2c/devices/1-0068/si5326_reg"
+set OUTFILE "/sys/bus/i2c/devices/1-0068/si5326_reg"
+
+
+if { [info exists ::env(CLAT_ADJ) ] } {
+	set CLAT_ADJ $::env(CLAT_ADJ)	
+} else {
+	set CLAT_ADJ 5				; # 1 nsec 
+}
+
+
+if { [info exists ::env(VERBOSE) ] } {
+	set VERBOSE $::env(VERBOSE)	
+} else {
+	set VERBOSE 0
+}
+
 
 
 proc write_reg {reg value} {
-	global outfile
-	if {$outfile == "-"} {
-		puts "$reg $value"
-	} else {
-		set fout [open $outfile w]
-		puts $fout "$reg $value"
-		close $fout
+	global OUTFILE VERBOSE
+	set hv [format 0x%02x $value]
+	set fout [open $OUTFILE w]
+	puts $fout "$reg $hv"
+	if { $VERBOSE } {
+		puts "$reg  <= $hv"
 	}
+	close $fout
 }
 
 proc read_reg {reg} {
-	global outfile
-	if {$outfile == "-"} {
-		puts "$reg"
-	} else {
-		set fout [open $outfile w]
-                puts $fout "$reg"
-                close $fout
-		set fin [open $outfile r]
-		puts [gets $fin]
-		close $fin
-	}
+	global OUTFILE VERBOSE
+
+	set fout [open $OUTFILE w]
+        puts $fout "$reg"
+        close $fout
+	set fin [open $OUTFILE r]
+	set value "0x[lindex [split [gets $fin] { } ] 1 ]"
+	close $fin
+	if { $VERBOSE } {
+		puts "$reg => $value"
+	}	
+	return $value
 }
+
 
 set pinc 0
 
@@ -34,5 +51,53 @@ if { $::argc > 0 } {
 	set pinc [lindex $::argv 0]
 }
 
-puts "si5326_increment_phase $pinc"
+#puts "si5326_increment_phase $pinc"
 
+if { $pinc < 0 } {
+	set psign -1
+} else {
+	set psign 1
+}
+
+
+
+
+proc set_CLAT {value} {
+	global VERBOSE
+	write_reg 16 $value
+	while { [expr [read_reg 130] & 0x80] != 0 } {
+		if { ! $VERBOSE } {
+			puts -nonewline .
+			flush stdout			
+		}
+		after 100
+	}
+	if { ! $VERBOSE } {
+		puts ""
+	}
+}
+
+# make sure INCREMENT is clear in the cache
+set _incdec [expr [read_reg 10] & 0x7F ] 
+
+proc set_INCDEC {} {
+	global _incdec
+	write_reg 10 [expr $_incdec | 0x80 ]
+}
+
+proc clr_INCDEC {} {
+	global _incdec 
+	write_reg 10 [expr $_incdec ]
+}
+
+
+
+for { set pix 0 } { $pinc != $pix } { set pix [expr $pix + $psign] } {
+	if { $VERBOSE } {
+		puts ""
+	}
+	set_CLAT $CLAT_ADJ		;# 1,2
+	set_INCDEC			;# 3
+	set_CLAT 0			;# 4,5
+	clr_INCDEC			;# 6	
+}
