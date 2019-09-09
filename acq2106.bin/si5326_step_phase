@@ -4,7 +4,10 @@ set OUTFILE "/sys/bus/i2c/devices/1-0068/si5326_reg"
 
 
 if { [info exists ::env(CLAT_ADJ) ] } {
-	set CLAT_ADJ $::env(CLAT_ADJ)	
+	set CLAT_ADJ $::env(CLAT_ADJ)
+	if { [expr $CLAT_ADJ < 0 ] } {
+		set CLAT_ADJ [expr 0 - $CLAT_ADJ]
+	}
 } else {
 	set CLAT_ADJ 5				; # 1 nsec 
 }
@@ -20,7 +23,7 @@ if { [info exists ::env(VERBOSE) ] } {
 
 proc write_reg {reg value} {
 	global OUTFILE VERBOSE
-	set hv [format 0x%02x $value]
+	set hv [format 0x%02x [expr $value & 0xff ] ]
 	set fout [open $OUTFILE w]
 	puts $fout "$reg $hv"
 	if { $VERBOSE } {
@@ -51,16 +54,11 @@ if { $::argc > 0 } {
 	set pinc [lindex $::argv 0]
 }
 
-#puts "si5326_increment_phase $pinc"
-
 if { $pinc < 0 } {
-	set psign -1
-} else {
-	set psign 1
+	set CLAT_ADJ [expr 0 - $CLAT_ADJ]
+	set pinc [expr 0 - $pinc]
 }
-
-
-
+#puts "si5326_increment_phase $pinc"
 
 proc set_CLAT {value} {
 	global VERBOSE
@@ -92,12 +90,11 @@ proc clr_INCDEC {} {
 
 
 
-for { set pix 0 } { $pinc != $pix } { set pix [expr $pix + $psign] } {
-	if { $VERBOSE } {
-		puts ""
-	}
+for { set pix 0 } { $pix < $pinc } { incr pix;  if { $VERBOSE } { puts "" } } {
+
 	set_CLAT $CLAT_ADJ		;# 1,2
 	set_INCDEC			;# 3
 	set_CLAT 0			;# 4,5
-	clr_INCDEC			;# 6	
+	clr_INCDEC			;# 6
+	
 }
