@@ -1,5 +1,8 @@
 #!/usr/local/bin/expect
 
+# status:
+# busy,incr,state,poll
+
 set OUTFILE "/sys/bus/i2c/devices/1-0068/si5326_reg"
 
 
@@ -49,6 +52,8 @@ proc read_reg {reg} {
 
 
 set pinc 0
+set pix 0
+set pollcat 0
 
 if { $::argc > 0 } {
 	set pinc [lindex $::argv 0]
@@ -60,14 +65,29 @@ if { $pinc < 0 } {
 }
 #puts "si5326_increment_phase $pinc"
 
+set R16	16		;# CLAT reg
+
+set R21	21		;# INCDEC reg
+set R21_INCDEC	0x80	
+
+
+set R130 130		;# STATUS reg
+set R130_CLAT_PROG 0x80
+
+proc set_state { state } {
+	global pinc pix pollcat
+	set fstate [open /dev/shm/si5326_step_state "w"]
+	puts $fstate "$pinc,$pix,$state,$pollcat"
+	close $fstate
+}
+
 proc set_CLAT {value} {
-	global VERBOSE
-	write_reg 16 $value
-	while { [expr [read_reg 130] & 0x80] != 0 } {
-		if { ! $VERBOSE } {
-			puts -nonewline .
-			flush stdout			
-		}
+	global VERBOSE pollcat R16 R130 R130_CLAT_PROG
+	set pollcat 0
+	write_reg $R16 $value
+	while { [expr [read_reg $R130] & $R130_CLAT_PROG] != 0 } {
+		set_state $value
+		incr pollcat
 		after 100
 	}
 	if { ! $VERBOSE } {
@@ -75,19 +95,20 @@ proc set_CLAT {value} {
 	}
 }
 
+
+
 # make sure INCREMENT is clear in the cache
-set _incdec [expr [read_reg 10] & 0x7F ] 
+set _incdec [expr [read_reg $R21] &  ~ $R21_INCDEC ] 
 
 proc set_INCDEC {} {
-	global _incdec
-	write_reg 10 [expr $_incdec | 0x80 ]
+	global _incdec R21 R21_INCDEC
+	write_reg $R21 [expr $_incdec | $R21_INCDEC]
 }
 
 proc clr_INCDEC {} {
-	global _incdec 
-	write_reg 10 [expr $_incdec ]
+	global _incdec R21
+	write_reg $R21 [expr $_incdec ]
 }
-
 
 
 for { set pix 0 } { $pix < $pinc } { incr pix;  if { $VERBOSE } { puts "" } } {
@@ -98,3 +119,5 @@ for { set pix 0 } { $pix < $pinc } { incr pix;  if { $VERBOSE } { puts "" } } {
 	clr_INCDEC			;# 6
 	
 }
+
+set_state 0
