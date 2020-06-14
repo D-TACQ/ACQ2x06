@@ -12,7 +12,7 @@ echo set.fanspeed $FANSPEED
 set.fanspeed $FANSPEED
 
 if [ $(cat /dev/gpio/MGT_PRESENT) -gt 0 ]; then
-	S7=C
+	[ "x$WHITE_RABBIT" = "x1" ] || S7=C
 	if [ -e /sys/bus/i2c/devices/8-0054/eeprom ]; then
 		/usr/local/init/mgt482.init
 	else
