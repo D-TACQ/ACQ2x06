@@ -38,8 +38,8 @@ do_one_sfp() {
 			rm $mgt/ddm
 		else
 			echo OK > $mgt/init
-			echo 1 > /dev/gpio/MGT${SFPN}_G
-			echo 0 > /dev/gpio/MGT${SFPN}_R
+#			echo 1 > /dev/gpio/MGT${SFPN}_G
+#			echo 0 > /dev/gpio/MGT${SFPN}_R
 		fi
 	else
 		[ -e $mgt/ddm ] && cat $ddm > $mgt/ddm
@@ -57,8 +57,8 @@ on_sfp_removed() {
         SFP=$(basename $ppp)
         SFPN=${SFP#SFP}
 	rm $mgt/init
-        echo 0 > /dev/gpio/MGT${SFPN}_G
-        echo 1 > /dev/gpio/MGT${SFPN}_R
+#        echo 0 > /dev/gpio/MGT${SFPN}_G
+#        echo 1 > /dev/gpio/MGT${SFPN}_R
 }
 
 do_sfp_scan() {
