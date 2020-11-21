@@ -16,6 +16,22 @@ avago_monitor() {
 	}'
 }
 
+set_led() {
+	SFP=$1; 
+	red=0
+	grn=0
+	case $2 in
+	G)	grn=1;;
+	R)	red=1;;
+	*)	;;
+	esac
+	if [ -e /dev/gpio/LED/MGT${SFP}_G ]; then
+		echo $grn > /dev/gpio/LED/MGT${SFP}_G
+		echo $red > /dev/gpio/LED/MGT${SFP}_R
+	else
+		/usr/bin/logger -t sfp-scan "ERROR /dev/gpio/LED/MGT${SFP}_G"
+	fi
+}
 
 do_one_sfp() {
 	file=$1 verbose=$2
@@ -38,8 +54,7 @@ do_one_sfp() {
 			rm $mgt/ddm
 		else
 			echo OK > $mgt/init
-#			echo 1 > /dev/gpio/MGT${SFPN}_G
-#			echo 0 > /dev/gpio/MGT${SFPN}_R
+			set_led $SFPN G
 		fi
 	else
 		[ -e $mgt/ddm ] && cat $ddm > $mgt/ddm
@@ -57,8 +72,7 @@ on_sfp_removed() {
         SFP=$(basename $ppp)
         SFPN=${SFP#SFP}
 	rm $mgt/init
-#        echo 0 > /dev/gpio/MGT${SFPN}_G
-#        echo 1 > /dev/gpio/MGT${SFPN}_R
+	set_led $SFPN R
 }
 
 do_sfp_scan() {
