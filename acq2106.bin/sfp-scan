@@ -38,6 +38,8 @@ do_one_sfp() {
 			rm $mgt/ddm
 		else
 			echo OK > $mgt/init
+			echo 1 > /dev/gpio/MGT${SFPN}_G
+			echo 0 > /dev/gpio/MGT${SFPN}_R
 		fi
 	else
 		[ -e $mgt/ddm ] && cat $ddm > $mgt/ddm
@@ -47,6 +49,16 @@ do_one_sfp() {
 		avago_monitor $mgt/ddm >$mgt/actuals
 		[ $verbose -ne 0 ] && cat $mgt/actuals
 	fi		
+}
+
+on_sfp_removed() {
+	file=$1
+        ppp=$(dirname $file)
+        SFP=$(basename $ppp)
+        SFPN=${SFP#SFP}
+	rm $mgt/init
+        echo 0 > /dev/gpio/MGT${SFPN}_G
+        echo 1 > /dev/gpio/MGT${SFPN}_R
 }
 
 do_sfp_scan() {
@@ -70,6 +82,7 @@ do_sfp_scan() {
 	for file in /dev/gpio/MGT482/SFP?/PRESENT
 	do
 		[ -e $file ] && [ $(cat $file) -eq 1 ] && do_one_sfp $file $verbose
+		[ -e $file ] && [ $(cat $file) -eq 0 ] && [ -e $mgt/init ] && on_sfp_removed $file $verbose
 	done
 
 	echo "$NEW" > /dev/MGT482/init
