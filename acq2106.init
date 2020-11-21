@@ -12,8 +12,10 @@ echo set.fanspeed $FANSPEED
 set.fanspeed $FANSPEED
 
 if [ $(cat /dev/gpio/MGT_PRESENT) -gt 0 ]; then
-	WRSPCL=/mnt/ACQ2106_TOP_*_WR*bit.gz
- 	if [ -e $WRSPCL ] && echo $WRSPCL | grep -qv 9011; then
+	WRSPCL=$(ls -t /mnt/ACQ2106_TOP_*_WR*bit.gz 2>/dev/null | head -n 1)
+	if [ -z $WRSPCL ]; then
+		S7=C
+ 	elif [ -e $WRSPCL ] && echo $WRSPCL | grep -qv 9011; then
 		echo "acq2106.init WR personality NO COMMS" $WRSPCL
 	elif [ "x$WHITE_RABBIT" = "x1" ]; then
 	       echo "acq2106.init DEPRECATED WHITE_RABBIT definition in acq400.sh, assume NO COMMS"
