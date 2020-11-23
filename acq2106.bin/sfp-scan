@@ -55,6 +55,7 @@ do_one_sfp() {
 		else
 			echo OK > $mgt/init
 			set_led $SFPN G
+			[ $verbose -ne 0 ] && echo "sfp $SFPN G"
 		fi
 	else
 		[ -e $mgt/ddm ] && cat $ddm > $mgt/ddm
@@ -67,12 +68,11 @@ do_one_sfp() {
 }
 
 on_sfp_removed() {
-	file=$1
-        ppp=$(dirname $file)
-        SFP=$(basename $ppp)
-        SFPN=${SFP#SFP}
-	rm $mgt/init
-	set_led $SFPN R
+	port=$1
+	init=$2
+	set_led $port R
+	rm $init
+	[ $3 -ne 0 ] && echo "on_sfp_removed $port"
 }
 
 do_sfp_scan() {
@@ -92,11 +92,11 @@ do_sfp_scan() {
 		fi
 	fi
 
-
-	for file in /dev/gpio/MGT482/SFP?/PRESENT
-	do
+	for port in 1 2 3 4; do
+		file=/dev/gpio/MGT482/SFP${port}/PRESENT
+		init=/dev/MGT482/SFP${port}/init
 		[ -e $file ] && [ $(cat $file) -eq 1 ] && do_one_sfp $file $verbose
-		[ -e $file ] && [ $(cat $file) -eq 0 ] && [ -e $mgt/init ] && on_sfp_removed $file $verbose
+		[ -e $file ] && [ $(cat $file) -eq 0 ] && [ -e $init ] && on_sfp_removed $port $init $verbose
 	done
 
 	echo "$NEW" > /dev/MGT482/init
@@ -137,6 +137,8 @@ make_xml_data() {
 
 case $1 in
 monitor)
+	for p in 1 2 3 4; set_led $p 0
+
 	while [ 1 ]; do
 		do_sfp_scan 0
 		make_xml_data
