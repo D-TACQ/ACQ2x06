@@ -45,7 +45,6 @@ do_one_sfp() {
 	mgt=/dev/MGT482/$SFP
 	mkdir -p $mgt
 	if [ ! -e $mgt/init ]; then
-		echo init $mgt
 		cat $eeprom > $mgt/eeprom
 		sfp_decode $mgt/eeprom > $mgt/sid
 		cat $ddm 2>&1 > $mgt/ddm
@@ -69,9 +68,9 @@ do_one_sfp() {
 
 on_sfp_removed() {
 	port=$1
-	init=$2
+	dir=$2
 	set_led $port R
-	rm $init
+	rm -Rf $dir
 	[ $3 -ne 0 ] && echo "on_sfp_removed $port"
 }
 
@@ -81,22 +80,27 @@ do_sfp_scan() {
 
 	mkdir -p /dev/MGT482
 
+	[ -e /dev/MGT482/init ] && OLD="$(cat /dev/MGT482/init)"
 # force full update first time or changed config
 	NEW="$(cat /dev/gpio/MGT482/SFP?/PRESENT)"
-	if [ -e /dev/MGT482/init ]; then
-		OLD="$(cat /dev/MGT482/init)"
-		if [ "x$OLD" != "x$NEW" ]; then
-			echo SFP change detected \"$OLD\" \"$NEW\"
-			rm /dev/MGT482/init
-			rm -Rf /dev/MGT482/SFP?
-		fi
+	if [ "x$OLD" != "x$NEW" ]; then
+		echo SFP change detected \"$OLD\" \"$NEW\"
+		rm -f /dev/MGT482/init
+		sfp=1
+		for present in $NEW; do
+			mkdir -p /dev/MGT482/SFP$sfp
+			echo $present > /dev/MGT482/SFP$sfp/PRESENT
+			sfp=$(($sfp+1))
+		done
 	fi
 
 	for port in 1 2 3 4; do
-		file=/dev/gpio/MGT482/SFP${port}/PRESENT
-		init=/dev/MGT482/SFP${port}/init
+		dir=/dev/MGT482/SFP${port}
+		file=${dir}/PRESENT
+		init=${dir}/init
+#		echo do_sfp_scan dir:$dir file:$file init:$init
 		[ -e $file ] && [ $(cat $file) -eq 1 ] && do_one_sfp $file $verbose
-		[ -e $file ] && [ $(cat $file) -eq 0 ] && [ -e $init ] && on_sfp_removed $port $init $verbose
+		[ -e $file ] && [ $(cat $file) -eq 0 ] && [ -e $init ] && on_sfp_removed $port $dir $verbose
 	done
 
 	echo "$NEW" > /dev/MGT482/init
@@ -137,10 +141,13 @@ make_xml_data() {
 
 case $1 in
 monitor)
-	for p in 1 2 3 4; set_led $p 0
+	rm -Rf /dev/MGT482
+	for p in 1 2 3 4; do 
+		set_led $p 0; 
+	done
 
 	while [ 1 ]; do
-		do_sfp_scan 0
+		do_sfp_scan ${2:-0}
 		make_xml_data
 		sleep 2
 	done
