@@ -1,6 +1,6 @@
 #!/bin/sh
 # acq2106_init_gpio
-source /usr/local/bin/acq400_init_gpio_common.sh
+
 
 common_begin
 
@@ -175,7 +175,7 @@ lnALO /dev/gpio/CHIP2/P13	/dev/gpio/CLK/OSC_X_CLK_OE
 lnALO /dev/gpio/CHIP2/P14	/dev/gpio/CLK/FP_CLK_OE
 lnALO /dev/gpio/CHIP2/P15	/dev/gpio/CLK/FP_OE
 lnALO /dev/gpio/CHIP2/P16	/dev/gpio/CLK/Si570_OE
-lnALO /dev/gpio/CHIP2/P17	/dev/gpio/15VA_EN
+
 
 if $HAS_FPCHIP1 && $HAS_FPCHIP2; then
 	echo FPCHIP1 special
