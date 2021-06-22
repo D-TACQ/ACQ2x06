@@ -54,3 +54,6 @@ load.si5326 si5326_1-1_bypass.txt
 set.fpmux off
 
 
+if [ "x$FIX_LEDS_SLEEP" != "x" ]; then
+	nice /usr/local/CARE/fix-leds-watcher $FIX_LEDS_SLEEP &
+fi
