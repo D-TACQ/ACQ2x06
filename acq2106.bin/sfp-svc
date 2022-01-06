@@ -1,0 +1,20 @@
+#!/usr/bin/expect
+
+if {$::argc > 0} {
+	set SFP [lindex $::argv 0]
+} else {
+	set SFP SFP3
+}
+
+log_user 0
+
+set ACT /dev/MGT482/$SFP/actuals
+
+
+while { 1 } {
+	spawn inotifywait -e CLOSE_WRITE $ACT
+	expect "CLOSE_WRITE,CLOSE" {
+		puts [read [open $ACT r]]
+	}
+}
+
