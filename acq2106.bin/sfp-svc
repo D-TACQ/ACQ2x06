@@ -12,11 +12,15 @@ set ACT /dev/MGT482/$SFP/actuals
 
 
 while { 1 } {
-	spawn inotifywait -e CLOSE_WRITE $ACT
-	expect "CLOSE_WRITE,CLOSE" {
-		puts [read [open $ACT r]]
+	if { [file exists $ACT] } {
+		spawn inotifywait -e CLOSE_WRITE $ACT
+		expect "CLOSE_WRITE,CLOSE" {
+			puts [read [open $ACT r]]
+		}
+		wait
+	} else {
+		sleep 5
 	}
-	wait
 }
 
 
