@@ -112,10 +112,10 @@ fi
 mgt482_set_all_tx_disable 1
 
 cat - >>/etc/inetd.conf <<EOF
-4281 stream tcp nowait root sfp-svc sfp-svc SFP1
-4282 stream tcp nowait root sfp-svc sfp-svc SFP2
-4283 stream tcp nowait root sfp-svc sfp-svc SFP3
-4284 stream tcp nowait root sfp-svc sfp-svc SFP4
+4291 stream tcp nowait root sfp-svc sfp-svc SFP1
+4292 stream tcp nowait root sfp-svc sfp-svc SFP2
+4293 stream tcp nowait root sfp-svc sfp-svc SFP3
+4294 stream tcp nowait root sfp-svc sfp-svc SFP4
 EOF
 
 
