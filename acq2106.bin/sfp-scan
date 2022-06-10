@@ -42,6 +42,7 @@ do_one_sfp() {
 	eeprom=/sys/class/i2c-dev/i2c-$bus/device/$bus-0050/eeprom
 	ddm=/sys/class/i2c-dev/i2c-$bus/device/$bus-0051/eeprom
 	[ $verbose -ne 0 ] && echo SFP $SFPN present
+	[ $verbose -gt 1 ] && echo SFP $SFPN eeprom:$eeprom ddm:$ddm
 	mgt=/dev/MGT482/$SFP
 	mkdir -p $mgt
 	if [ ! -e $mgt/init ]; then
