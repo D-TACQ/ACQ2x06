@@ -1,6 +1,7 @@
 #!/bin/sh
-# acq2106_init_gpio
+# acq2206_init_gpio
 
+echo "++ acq2206_init_gpio 01"
 source /usr/local/bin/acq400_init_gpio_common.sh
 
 common_begin
@@ -208,11 +209,10 @@ elif $HAS_FPCHIP2; then
 	echo "+++ init FPLEDS" 
 	init_acq2106_leds FPCHIP2
 else
-	echo "+++ init BPLEDS"
-	init_acq2106_leds PWMCHIP
+	echo "+++ SORRY, NO LEDS "
 fi
 
-acq2006_create_pwm
+#acq2006_create_pwm
 
 set.sys /dev/gpio/SYNC_OUT_GPIO_OUT 1
 echo "setting DIST_CLK_HDMI .. Si5326 is the ONLY valid input.."
@@ -221,19 +221,19 @@ set.sys /dev/gpio/CLK/DIST_CLK_HDMI 1
 common_end
 
 /sbin/insmod /usr/local/lib/modules/si5326.ko
-/sbin/insmod /usr/local/lib/modules/isl22313.ko
+#/sbin/insmod /usr/local/lib/modules/isl22313.ko
 
-mkdir -p /dev/acq2006/
-ln -s /sys/bus/i2c/devices/1-0050/wiper /dev/acq2006/vap
-ln -s /sys/bus/i2c/devices/1-0051/wiper /dev/acq2006/van
+#mkdir -p /dev/acq2006/
+#ln -s /sys/bus/i2c/devices/1-0050/wiper /dev/acq2006/vap
+#ln -s /sys/bus/i2c/devices/1-0051/wiper /dev/acq2006/van
 
-echo +++ setting VAP and VAN to MIN BEFORE touching gpio
-echo 255 > /dev/acq2006/vap
-echo 255 > /dev/acq2006/van
+#echo +++ setting VAP and VAN to MIN BEFORE touching gpio
+#echo 255 > /dev/acq2006/vap
+#echo 255 > /dev/acq2006/van
 
 echo +++ now hook 15VA_EN
 lnALO /dev/gpio/CHIP2/P17	/dev/gpio/15VA_EN
 echo 0 > /dev/gpio/15VA_EN
 
-echo "++ acq2106b_init_gpio done"
+echo "++ acq2206_init_gpio 99"
 
