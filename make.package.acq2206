@@ -1,0 +1,27 @@
+#!/bin/bash
+
+DC=$(date +%y%m%d%H%M%S)
+SEQ=05
+MODEL=acq2206
+
+TOP=..
+
+rm -Rf opkg/*
+mkdir -p opkg/usr/local/bin opkg/usr/local/init opkg/usr/local/CARE opkg/etc/si5326.d
+
+cp acq2106.bin/* opkg/usr/local/bin
+
+cp mgt482-lamptest opkg/usr/local/CARE
+cp ${MODEL}_init_gpio opkg/usr/local/bin
+cp acq2106_init_gpio_common.sh opkg/usr/local/CARE
+cp ${MODEL}.map   opkg/usr/local/
+cp ${MODEL}.init opkg/usr/local/init
+cp mgt.init mgt482.init opkg/usr/local/init
+#cp si5326.d/* opkg/etc/si5326.d
+
+
+tar czf release/${SEQ}-${MODEL}-${DC}.tgz -C opkg .
+rm -Rf ../PACKAGES/${SEQ}-${MODEL}*
+cp release/${SEQ}-${MODEL}-${DC}.tgz ../PACKAGES/
+echo cp release/${SEQ}-${MODEL}-${DC}.tgz ../PACKAGES/
+

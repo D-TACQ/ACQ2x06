@@ -1,0 +1,239 @@
+#!/bin/sh
+# acq2106_init_gpio
+
+source /usr/local/bin/acq400_init_gpio_common.sh
+
+common_begin
+
+if [ ! -e /sys/bus/i2c/devices/1-0022/gpio/gpiochip* ]; then
+	echo I2C ERROR: unable to continue
+	PS1="$PS1 I2C FAIL #" /bin/sh
+fi
+
+# i2c gpio
+
+# si5326
+mkdir -p /dev/gpio/CLK
+zgpio0=$(get_zynq_gpio0)
+export_gpio_value_ln $(($zgpio0+11)) /dev/gpio/CLK/LOL
+export_gpio_value_ln $(($zgpio0+14)) /dev/gpio/CLK/C1B
+export_gpio_value_ln $(($zgpio0+15)) /dev/gpio/CLK/C2B
+
+
+# main GPIO
+CHIP1=$(basename $(echo /sys/bus/i2c/devices/1-0022/gpio/gpiochip*))
+CHIP2=$(basename $(echo /sys/bus/i2c/devices/1-0023/gpio/gpiochip*))
+
+
+let pin00=${CHIP1#gpiochip*}
+let pin10=${CHIP2#gpiochip*}
+
+echo +++ gpiochip 1-0022 $CHIP1 gpio $pin00 $pin01
+echo +++ gpiochip 1-0023 $CHIP2 gpio $pin10 $pin11
+
+mkdir -p /dev/gpio/CHIP1
+let pin=$pin00
+let ix=0
+#        P000102030405060710111213141516172021222324252627
+for dir in O O O O O O O O I O O O O O O O O O O O O I O O
+do
+	export_gpio $pin
+	ln -s /sys/class/gpio/gpio$pin /dev/gpio/CHIP1/$(printf P%02o $ix)		
+	[ "$dir" = "O" ] && setO gpio$pin
+	let pin=$pin+1
+	let ix=$ix+1
+done
+
+
+mkdir -p /dev/gpio/CHIP2
+let pin=$pin10
+let ix=0 
+#        P000102030405060710111213141516172021222324252627
+for dir in I I I I I I I I O O O O O O O O O O O O I I I I
+do
+	export_gpio $pin
+	ln -s /sys/class/gpio/gpio$pin /dev/gpio/CHIP2/$(printf P%02o $ix)		
+	[ "$dir" = "O" ] && setO gpio$pin
+	let pin=$pin+1
+	let ix=$ix+1
+done	
+
+# i2c gpio 
+
+source /usr/local/CARE/acq2106_init_gpio_common.sh
+
+if $HAS_PWMCHIP; then
+	echo +++ PWMCHIP FOUND $PWMCHIP
+	mkdir /dev/gpio/PWMCHIP
+	let p00=${PWMCHIP#gpiochip*}
+	let ix=1
+#        	 P00010203040506070809101112131415
+	for dir in   O O O O O O O O O O O O O O
+	do	
+		let pin="$p00+$ix"
+		export_gpio $pin
+		ln -s /sys/class/gpio/gpio$pin /dev/gpio/PWMCHIP/$(printf P%02d $ix)
+		[ "$dir" = "O" ] && setOAL gpio$pin
+		let ix="$ix+1"
+	done
+	echo +++ PWMCHIP 99	
+fi
+
+if $HAS_D37; then
+	if $HAS_FPCHIP1; then
+		echo +++ FPCHIP1 FOUND $FPCHIP1
+		mkdir /dev/gpio/FPCHIP1
+		let p00=${FPCHIP1#gpiochip*}
+		let ix=0
+	#        	 P00010203040506070809101112131415
+		for dir in O O O O O O O O O O O O O O O O
+		do	
+			let pin="$p00+$ix"
+			export_gpio $pin
+			ln -s /sys/class/gpio/gpio$pin /dev/gpio/FPCHIP1/$(printf P%02d $ix)
+			[ "$dir" = "O" ] && setOAL gpio$pin
+			let ix="$ix+1"
+		done
+		echo +++ FPCHIP1 99
+	fi	
+else
+	if $HAS_FPCHIP1; then
+		echo +++ FPCHIP1 FOUND $FPCHIP1
+		mkdir /dev/gpio/FPCHIP1
+		let p00=${FPCHIP1#gpiochip*}
+		let ix=0
+	#        	 P00010203040506070809101112131415
+		for dir in O O O O O O O O O O O O I I I O
+		do		
+			let pin="$p00+$ix"
+			export_gpio $pin
+			ln -s /sys/class/gpio/gpio$pin /dev/gpio/FPCHIP1/$(printf P%02d $ix)
+			[ "$dir" = "O" ] && setOAL gpio$pin
+			let ix="$ix+1"		
+		done
+		echo +++ FP MODEL CODE $(cat /dev/gpio/FPCHIP1/P1[234]/value)
+	fi
+	
+	if $HAS_FPCHIP2; then
+		echo +++ FPCHIP2 FOUND $FPCHIP2
+		mkdir /dev/gpio/FPCHIP2
+		let p00=${FPCHIP2#gpiochip*}
+		let ix=0
+	#        	 P00010203040506070809101112131415
+		for dir in O O O O O O O O O O O O O O O O
+		do	
+			let pin="$p00+$ix"
+			export_gpio $pin
+			ln -s /sys/class/gpio/gpio$pin /dev/gpio/FPCHIP2/$(printf P%02d $ix)
+			[ "$dir" = "O" ] && setOAL gpio$pin
+			let ix="$ix+1"
+		done
+		echo +++ FPCHIP2 99
+	fi
+fi
+
+mkdir -p /dev/gpio/CLK/MB/
+lnAH /dev/gpio/CHIP1/P00 /dev/gpio/CLK/OE_CLK1_ELF1
+lnAH /dev/gpio/CHIP1/P01 /dev/gpio/CLK/OE_CLK1_ELF2
+lnAH /dev/gpio/CHIP1/P02 /dev/gpio/CLK/OE_CLK1_ELF3
+lnAH /dev/gpio/CHIP1/P03 /dev/gpio/CLK/OE_CLK1_ELF4
+lnAH /dev/gpio/CHIP1/P04 /dev/gpio/CLK/OE_CLK1_ELF5
+lnAH /dev/gpio/CHIP1/P05 /dev/gpio/CLK/OE_CLK1_ELF6
+lnAH /dev/gpio/CHIP1/P06 /dev/gpio/CLK/OE_CLK1_ZYNQ
+mkdir -p /dev/gpio/LED
+lnAL /dev/gpio/CHIP1/P07 /dev/gpio/LED/MGT5_G
+lnAL /dev/gpio/CHIP1/P10 /dev/gpio/MGT_PRESENT
+lnAL /dev/gpio/CHIP1/P11 /dev/gpio/LED/MGT5_R
+lnAL /dev/gpio/CHIP1/P12 /dev/gpio/LED/MGT4_G
+lnAL /dev/gpio/CHIP1/P13 /dev/gpio/LED/MGT4_R
+lnAL /dev/gpio/CHIP1/P14 /dev/gpio/LED/MGT3_G
+lnAL /dev/gpio/CHIP1/P15 /dev/gpio/LED/MGT3_R
+lnAL /dev/gpio/CHIP1/P16 /dev/gpio/LED/MGT2_G
+lnAL /dev/gpio/CHIP1/P17 /dev/gpio/LED/MGT2_R
+
+lnAH /dev/gpio/CHIP1/P20 /dev/gpio/OE_CLK1_SYNC
+lnAH /dev/gpio/CHIP1/P21 /dev/gpio/FP_SYNC_DIR_OUT
+lnAH /dev/gpio/CHIP1/P22 /dev/gpio/FP_IO_DIR_OUT
+lnAH /dev/gpio/CHIP1/P23 /dev/gpio/SYNC_IN_GPIO_OUT
+lnAH /dev/gpio/CHIP1/P24 /dev/gpio/SYNC_OUT_GPIO_OUT
+lnAL /dev/gpio/CHIP1/P25 /dev/gpio/SYNC_CABLE_DET
+lnAL /dev/gpio/CHIP1/P26 /dev/gpio/LED/MGT1_G
+lnAL /dev/gpio/CHIP1/P27 /dev/gpio/LED/MGT1_R
+
+lnAL /dev/gpio/CHIP2/P00	/dev/gpio/fmc1_present
+lnAL /dev/gpio/CHIP2/P01	/dev/gpio/fmc2_present
+lnAL /dev/gpio/CHIP2/P02	/dev/gpio/fmc3_present
+lnAL /dev/gpio/CHIP2/P03	/dev/gpio/fmc4_present
+lnAL /dev/gpio/CHIP2/P04	/dev/gpio/fmc5_present
+lnAL /dev/gpio/CHIP2/P05	/dev/gpio/fmc6_present
+lnAL /dev/gpio/CHIP2/P06 	/dev/gpio/15VP_PGD
+lnAL /dev/gpio/CHIP2/P07	/dev/gpio/15VN_PGD
+
+lnALO /dev/gpio/CHIP2/P10	/dev/gpio/CLK/ZCLK_OE
+lnALO /dev/gpio/CHIP2/P11	/dev/gpio/CLK/DIST_CLK_HDMI  # Not CLK1
+lnALO /dev/gpio/CHIP2/P12	/dev/gpio/CLK/OSC_X_OE
+lnALO /dev/gpio/CHIP2/P13	/dev/gpio/CLK/OSC_X_CLK_OE
+lnALO /dev/gpio/CHIP2/P14	/dev/gpio/CLK/FP_CLK_OE
+lnALO /dev/gpio/CHIP2/P15	/dev/gpio/CLK/FP_OE
+lnALO /dev/gpio/CHIP2/P16	/dev/gpio/CLK/Si570_OE
+
+
+if $HAS_FPCHIP1 && $HAS_FPCHIP2; then
+	echo FPCHIP1 special
+	lnALO /dev/gpio/FPCHIP1/P08	/dev/gpio/LED/CLK_G
+	lnALO /dev/gpio/FPCHIP1/P09	/dev/gpio/LED/CLK_R
+	lnALO /dev/gpio/FPCHIP1/P10	/dev/gpio/LED/TRG_G
+	lnALO /dev/gpio/FPCHIP1/P11	/dev/gpio/LED/TRG_R
+	lnALO /dev/gpio/FPCHIP1/P15 /dev/gpio/LED/FPGA_DONE
+	echo FPCHIP1 special99	
+elif $HAS_D37; then
+	echo D37 skip special
+else
+	lnALO /dev/gpio/CHIP2/P20	/dev/gpio/LED/CLK_G
+	lnALO /dev/gpio/CHIP2/P21	/dev/gpio/LED/CLK_R
+	lnALO /dev/gpio/CHIP2/P22	/dev/gpio/LED/TRG_G
+	lnALO /dev/gpio/CHIP2/P23	/dev/gpio/LED/TRG_R
+fi
+
+lnAH /dev/gpio/CHIP2/P24/	/dev/gpio/IS_ACQ2206
+lnAL /dev/gpio/CHIP2/P25/	/dev/gpio/IS_REVB
+lnAH /dev/gpio/CHIP2/P26/	/dev/gpio/IS_ACQ2006
+lnAL /dev/gpio/CHIP2/P27/	/dev/gpio/IS_RES
+
+if $HAS_D37; then
+	echo "+++ init D37 LEDS"
+	init_acq2106_leds PWMCHIP
+	init_acq2106d37_leds FPCHIP1	
+elif $HAS_FPCHIP2; then
+	echo "+++ init FPLEDS" 
+	init_acq2106_leds FPCHIP2
+else
+	echo "+++ init BPLEDS"
+	init_acq2106_leds PWMCHIP
+fi
+
+acq2006_create_pwm
+
+set.sys /dev/gpio/SYNC_OUT_GPIO_OUT 1
+echo "setting DIST_CLK_HDMI .. Si5326 is the ONLY valid input.."
+set.sys /dev/gpio/CLK/DIST_CLK_HDMI 1
+
+common_end
+
+/sbin/insmod /usr/local/lib/modules/si5326.ko
+/sbin/insmod /usr/local/lib/modules/isl22313.ko
+
+mkdir -p /dev/acq2006/
+ln -s /sys/bus/i2c/devices/1-0050/wiper /dev/acq2006/vap
+ln -s /sys/bus/i2c/devices/1-0051/wiper /dev/acq2006/van
+
+echo +++ setting VAP and VAN to MIN BEFORE touching gpio
+echo 255 > /dev/acq2006/vap
+echo 255 > /dev/acq2006/van
+
+echo +++ now hook 15VA_EN
+lnALO /dev/gpio/CHIP2/P17	/dev/gpio/15VA_EN
+echo 0 > /dev/gpio/15VA_EN
+
+echo "++ acq2106b_init_gpio done"
+
