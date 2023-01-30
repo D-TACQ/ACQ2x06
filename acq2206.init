@@ -60,3 +60,21 @@ set.fpmux off
 #if [ "x$FIX_LEDS_SLEEP" != "x" ]; then
 #	nice /usr/local/CARE/fix-leds-watcher $FIX_LEDS_SLEEP &
 #fi
+#
+echo REMOVEME make fake LEDS to keep going
+if [ -d /dev/gpio/LED ]; then
+	echo WOOPSEE .. /dev/gpio/LED already exists
+else
+	mkdir -p /dev/gpio/LED
+fi
+cd /dev/gpio/LED
+for led in \
+	ACT_G   FMC1_G  FMC3_G  FMC5_G  FMCC_G  MGT2_R  MGT4_R  TRG_R \
+	ACT_R   FMC1_R  FMC3_R  FMC5_R  MGT1_G  MGT3_G  MGT5_G \
+	CLK_G   FMC2_G  FMC4_G  FMC6_G  MGT1_R  MGT3_R  MGT5_R \
+	CLK_R   FMC2_R  FMC4_R  FMC6_R  MGT2_G  MGT4_G  TRG_G; do
+	[ ! -e $led ] && echo 0  > $led
+done
+
+
+
