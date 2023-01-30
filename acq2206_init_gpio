@@ -142,15 +142,7 @@ lnAH /dev/gpio/CHIP1/P04 /dev/gpio/CLK/OE_CLK1_ELF5
 lnAH /dev/gpio/CHIP1/P05 /dev/gpio/CLK/OE_CLK1_ELF6
 lnAH /dev/gpio/CHIP1/P06 /dev/gpio/CLK/OE_CLK1_ZYNQ
 mkdir -p /dev/gpio/LED
-lnAL /dev/gpio/CHIP1/P07 /dev/gpio/LED/MGT5_G
 lnAL /dev/gpio/CHIP1/P10 /dev/gpio/MGT_PRESENT
-lnAL /dev/gpio/CHIP1/P11 /dev/gpio/LED/MGT5_R
-lnAL /dev/gpio/CHIP1/P12 /dev/gpio/LED/MGT4_G
-lnAL /dev/gpio/CHIP1/P13 /dev/gpio/LED/MGT4_R
-lnAL /dev/gpio/CHIP1/P14 /dev/gpio/LED/MGT3_G
-lnAL /dev/gpio/CHIP1/P15 /dev/gpio/LED/MGT3_R
-lnAL /dev/gpio/CHIP1/P16 /dev/gpio/LED/MGT2_G
-lnAL /dev/gpio/CHIP1/P17 /dev/gpio/LED/MGT2_R
 
 lnAH /dev/gpio/CHIP1/P20 /dev/gpio/OE_CLK1_SYNC
 lnAH /dev/gpio/CHIP1/P21 /dev/gpio/FP_SYNC_DIR_OUT
@@ -158,8 +150,6 @@ lnAH /dev/gpio/CHIP1/P22 /dev/gpio/FP_IO_DIR_OUT
 lnAH /dev/gpio/CHIP1/P23 /dev/gpio/SYNC_IN_GPIO_OUT
 lnAH /dev/gpio/CHIP1/P24 /dev/gpio/SYNC_OUT_GPIO_OUT
 lnAL /dev/gpio/CHIP1/P25 /dev/gpio/SYNC_CABLE_DET
-lnAL /dev/gpio/CHIP1/P26 /dev/gpio/LED/MGT1_G
-lnAL /dev/gpio/CHIP1/P27 /dev/gpio/LED/MGT1_R
 
 lnAL /dev/gpio/CHIP2/P00	/dev/gpio/fmc1_present
 lnAL /dev/gpio/CHIP2/P01	/dev/gpio/fmc2_present
