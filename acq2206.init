@@ -13,7 +13,6 @@ FANSPEED=75
 echo set.fanspeed $FANSPEED
 set.fanspeed $FANSPEED
 
-pgmcomout() {
 if [ $(cat /dev/gpio/MGT_PRESENT) -gt 0 ]; then
 	WRSPCL=$(ls -t /mnt/ACQ2106_TOP_*_WR*bit.gz 2>/dev/null | head -n 1)
 	if [ -z $WRSPCL ]; then
@@ -31,7 +30,6 @@ if [ $(cat /dev/gpio/MGT_PRESENT) -gt 0 ]; then
 		/usr/local/init/mgt.init
 	fi
 fi
-}
 
 
 FMC_SCAN_FPGA=ACQ2206 FMC_SCAN_SITES="1 2 3 4 5 6" COMMS_SITE="$S7" /usr/local/bin/fmc-scan
