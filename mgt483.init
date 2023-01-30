@@ -1,0 +1,120 @@
+#!/bin/sh
+# gpio initialization for mgt482
+
+echo +++ mgt483.init
+
+MGTD=/dev/gpio/MGT482
+
+mgt482_set_all_tx_disable() 
+{
+	disable=${1:-1}
+	for kb in $MGTD/SFP?/TX_DISABLE
+	do
+		[ -e $kb ] && set.sys $kb $disable	
+	done
+		if [ $disable -ne 0 ];then
+			sens="disabled"
+		else
+			sens="enabled"
+		fi
+		echo +++ $sens SFP $(cat $MGTD/SFP?/TX_DISABLE)
+}
+
+if [ "$1" = "tx_enable" ]; then
+	mgt482_set_all_tx_disable 0
+	exit 0
+fi
+
+echo +++ MGT482 init
+
+source /usr/local/bin/acq400_init_gpio_common.sh
+
+
+
+CHIP1_IO="I O O IAL O I"
+CHIP2_IO="I O IAL O O I"
+
+#CHIP1_FX="LOS RATE_1 RATE_0 PRESENT TX_DISABLE TX_FAULT"
+CHIP1_FX="TX_FAULT TX_DISABLE PRESENT RATE_0 RATE_1 LOS"
+
+init_sfp_channel_phys() {
+# $chipid $pin $ix
+	chipid=$1
+	let pin=$2
+	let ix=$3
+	iolist="$(eval echo \$${chipid}_IO)"
+
+	(cd /sys/class/gpio; for dir in $iolist
+	do
+#		echo export_gpio $pin
+		export_gpio $pin
+		ln -s /sys/class/gpio/gpio$pin $MGTD/$chipid/$(printf P%02o $ix)
+		[ "$dir" = "O" ] && setO gpio$pin
+		[ "$dir" = "IAL" ] &&  setAL gpio$pin		
+		let pin=$pin+1
+		let ix=$ix+1
+	done)
+}
+
+init_sfp_channel_log() {
+	# 	$chipid $sfp $ix6
+	chipid=$1
+	sfp=$2
+	let ix=$3
+	fxlist="$(eval echo \$${chipid}_FX)"
+
+	SFPD=$MGTD/SFP$sfp
+	mkdir -p $SFPD
+	
+	for fx in $fxlist
+	do
+		ln -s $MGTD/$chipid/$(printf P%02o $ix)/value $SFPD/$fx
+		let ix=$ix+1
+	done
+}
+
+init_sfp_chip() {
+# MGT1 $CHIP1 1 2 3 4
+	chipid=$1; shift;
+	let pin00=${1#gpiochip*}; shift
+
+	mkdir -p $MGTD/$chipid
+	
+	let pin6=$pin00
+	let ix6=0
+
+	for sfp in $*
+	do
+		init_sfp_channel_phys $chipid $pin6 $ix6
+		init_sfp_channel_log $chipid $sfp $ix6
+		let pin6=$pin6+6
+		let ix6=$ix6+6
+	done
+}
+
+# i2c gpio
+
+I2CBUS=/sys/bus/i2c/devices/
+mkdir -p /dev/sites/C
+ln -s $I2CBUS/8-0054/eeprom /dev/sites/C
+fru-dump-acq /dev/sites/C/eeprom >/dev/sites/C/details
+CHIP1=$(basename $(echo $I2CBUS/8-0022/gpio/gpiochip*))
+
+mkdir -p $MGTD
+
+if [ "x$CHIP1" != "x" ]; then
+	init_sfp_chip CHIP1 $CHIP1 1 2 3 4
+fi
+
+mgt482_set_all_tx_disable 1
+
+cat - >>/etc/inetd.conf <<EOF
+4291 stream tcp nowait root sfp-svc sfp-svc SFP1
+4292 stream tcp nowait root sfp-svc sfp-svc SFP2
+4293 stream tcp nowait root sfp-svc sfp-svc SFP3
+4294 stream tcp nowait root sfp-svc sfp-svc SFP4
+EOF
+
+
+
+
