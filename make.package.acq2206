@@ -17,7 +17,7 @@ cp acq2106_init_gpio_common.sh opkg/usr/local/CARE
 cp ${MODEL}.map   opkg/usr/local/
 cp ${MODEL}.init opkg/usr/local/init
 cp mgt.init mgt483.init opkg/usr/local/init
-#cp si5326.d/* opkg/etc/si5326.d
+cp si5326.d/* opkg/etc/si5326.d
 
 
 tar czf release/${SEQ}-${MODEL}-${DC}.tgz -C opkg .

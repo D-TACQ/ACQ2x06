@@ -143,6 +143,13 @@ lnAH /dev/gpio/CHIP1/P05 /dev/gpio/CLK/OE_CLK1_ELF6
 lnAH /dev/gpio/CHIP1/P06 /dev/gpio/CLK/OE_CLK1_ZYNQ
 mkdir -p /dev/gpio/LED
 lnAL /dev/gpio/CHIP1/P10 /dev/gpio/MGT_PRESENT
+lnAL /dev/gpio/CHIP1/P11 /dev/gpio/HDMI_CABLE_DET_A
+lnAL /dev/gpio/CHIP1/P12 /dev/gpio/HDMI_CABLE_DET_B
+lnAL /dev/gpio/CHIP1/P13 /dev/gpio/HDMI_CABLE_DET_C
+lnAL /dev/gpio/CHIP1/P14 /dev/gpio/HDMI_CABLE_DET_D
+lnALO /dev/gpio/CHIP1/P15 /dev/gpio/FP_CLK_2_OE
+lnALO /dev/gpio/CHIP1/P16 /dev/gpio/HDMI_CLK_OE
+lnALO /dev/gpio/CHIP1/P17 /dev/gpio/HDMI_FB_OE
 
 lnAH /dev/gpio/CHIP1/P20 /dev/gpio/OE_CLK1_SYNC
 lnAH /dev/gpio/CHIP1/P21 /dev/gpio/FP_SYNC_DIR_OUT
@@ -167,6 +174,11 @@ lnALO /dev/gpio/CHIP2/P13	/dev/gpio/CLK/OSC_X_CLK_OE
 lnALO /dev/gpio/CHIP2/P14	/dev/gpio/CLK/FP_CLK_OE
 lnALO /dev/gpio/CHIP2/P15	/dev/gpio/CLK/FP_OE
 lnALO /dev/gpio/CHIP2/P16	/dev/gpio/CLK/Si570_OE
+lnALO /dev/gpio/CHIP2/P17	/dev/gpio/15VA_EN
+
+lnALO /dev/gpio/CHIP2/P20	/dev/gpio/FAN_EN
+lnALO /dev/gpio/CHIP2/P20	/dev/gpio/ZFAN_EN
+
 
 
 if $HAS_FPCHIP1 && $HAS_FPCHIP2; then
