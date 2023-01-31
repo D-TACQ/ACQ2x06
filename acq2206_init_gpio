@@ -179,7 +179,7 @@ lnALO /dev/gpio/CHIP2/P17	/dev/gpio/15VA_EN
 lnAHO /dev/gpio/CHIP2/P20	/dev/gpio/FAN_EN
 lnAHO /dev/gpio/CHIP2/P21	/dev/gpio/ZFAN_EN
 
-
+echo 1 > /dev/gpio/FAN_EN
 
 if $HAS_FPCHIP1 && $HAS_FPCHIP2; then
 	echo FPCHIP1 special
