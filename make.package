@@ -5,5 +5,6 @@ mkdir -p release
 sudo ./make.package.acq2006
 sudo ./make.package.acq2006b
 sudo ./make.package.acq2106
+sudo ./make.package.acq2206
 
 
