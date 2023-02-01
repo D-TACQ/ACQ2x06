@@ -150,6 +150,10 @@ lnAL /dev/gpio/CHIP1/P11 /dev/gpio/HDMI_CABLE_DET_A
 lnAL /dev/gpio/CHIP1/P12 /dev/gpio/HDMI_CABLE_DET_B
 lnAL /dev/gpio/CHIP1/P13 /dev/gpio/HDMI_CABLE_DET_C
 lnAL /dev/gpio/CHIP1/P14 /dev/gpio/HDMI_CABLE_DET_D
+lnAL /dev/gpio/CHIP1/P11 /dev/gpio/HDMI_CABLE_DET_1
+lnAL /dev/gpio/CHIP1/P12 /dev/gpio/HDMI_CABLE_DET_2
+lnAL /dev/gpio/CHIP1/P13 /dev/gpio/HDMI_CABLE_DET_3
+lnAL /dev/gpio/CHIP1/P14 /dev/gpio/HDMI_CABLE_DET_4
 lnALO /dev/gpio/CHIP1/P15 /dev/gpio/FP_CLK_2_OE
 lnALO /dev/gpio/CHIP1/P16 /dev/gpio/HDMI_CLK_OE
 lnALO /dev/gpio/CHIP1/P17 /dev/gpio/HDMI_FB_OE
