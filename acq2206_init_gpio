@@ -237,8 +237,8 @@ ln -s /sys/bus/i2c/devices/1-002c/rdac0 /dev/acq2006/vap
 ln -s /sys/bus/i2c/devices/1-002c/rdac1 /dev/acq2006/van
 
 echo +++ setting VAP and VAN to MIN BEFORE touching gpio
-echo 0 > /dev/acq2006/vap
-echo 0 > /dev/acq2006/van
+echo 254 > /dev/acq2006/vap
+echo 254 > /dev/acq2006/van
 
 echo +++ now hook 15VA_EN
 lnALO /dev/gpio/CHIP2/P17	/dev/gpio/15VA_EN
