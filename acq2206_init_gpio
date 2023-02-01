@@ -39,8 +39,10 @@ let ix=0
 for dir in O O O O O O O O I I I I I O O O O O O O O I O O
 do
 	export_gpio $pin
-	ln -s /sys/class/gpio/gpio$pin /dev/gpio/CHIP1/$(printf P%02o $ix)		
-	[ "$dir" = "O" ] && setO gpio$pin
+
+	ln -s /sys/class/gpio/gpio$pin /dev/gpio/CHIP1/$(printf P%02o $ix)
+	direction=in; [ "$dir" = "O" ] && direction=out
+	echo $direction > gpio$pin/direction
 	let pin=$pin+1
 	let ix=$ix+1
 done
@@ -48,18 +50,19 @@ done
 
 mkdir -p /dev/gpio/CHIP2
 let pin=$pin10
-let ix=0 
+let ix=0
 #        P000102030405060710111213141516172021222324252627
 for dir in I I I I I I I I O O O O O O O O O O O O I I I I
 do
 	export_gpio $pin
-	ln -s /sys/class/gpio/gpio$pin /dev/gpio/CHIP2/$(printf P%02o $ix)		
-	[ "$dir" = "O" ] && setO gpio$pin
+	ln -s /sys/class/gpio/gpio$pin /dev/gpio/CHIP2/$(printf P%02o $ix)
+	direction=in; [ "$dir" = "O" ] && direction=out
+	echo $direction > gpio$pin/direction
 	let pin=$pin+1
 	let ix=$ix+1
-done	
+done
 
-# i2c gpio 
+# i2c gpio
 
 source /usr/local/CARE/acq2106_init_gpio_common.sh
 
@@ -70,14 +73,14 @@ if $HAS_PWMCHIP; then
 	let ix=1
 #        	 P00010203040506070809101112131415
 	for dir in   O O O O O O O O O O O O O O
-	do	
+	do
 		let pin="$p00+$ix"
 		export_gpio $pin
 		ln -s /sys/class/gpio/gpio$pin /dev/gpio/PWMCHIP/$(printf P%02d $ix)
 		[ "$dir" = "O" ] && setOAL gpio$pin
 		let ix="$ix+1"
 	done
-	echo +++ PWMCHIP 99	
+	echo +++ PWMCHIP 99
 fi
 
 if $HAS_D37; then
@@ -88,7 +91,7 @@ if $HAS_D37; then
 		let ix=0
 	#        	 P00010203040506070809101112131415
 		for dir in O O O O O O O O O O O O O O O O
-		do	
+		do
 			let pin="$p00+$ix"
 			export_gpio $pin
 			ln -s /sys/class/gpio/gpio$pin /dev/gpio/FPCHIP1/$(printf P%02d $ix)
@@ -96,7 +99,7 @@ if $HAS_D37; then
 			let ix="$ix+1"
 		done
 		echo +++ FPCHIP1 99
-	fi	
+	fi
 else
 	if $HAS_FPCHIP1; then
 		echo +++ FPCHIP1 FOUND $FPCHIP1
@@ -105,16 +108,16 @@ else
 		let ix=0
 	#        	 P00010203040506070809101112131415
 		for dir in O O O O O O O O O O O O I I I O
-		do		
+		do
 			let pin="$p00+$ix"
 			export_gpio $pin
 			ln -s /sys/class/gpio/gpio$pin /dev/gpio/FPCHIP1/$(printf P%02d $ix)
 			[ "$dir" = "O" ] && setOAL gpio$pin
-			let ix="$ix+1"		
+			let ix="$ix+1"
 		done
 		echo +++ FP MODEL CODE $(cat /dev/gpio/FPCHIP1/P1[234]/value)
 	fi
-	
+
 	if $HAS_FPCHIP2; then
 		echo +++ FPCHIP2 FOUND $FPCHIP2
 		mkdir /dev/gpio/FPCHIP2
@@ -122,7 +125,7 @@ else
 		let ix=0
 	#        	 P00010203040506070809101112131415
 		for dir in O O O O O O O O O O O O O O O O
-		do	
+		do
 			let pin="$p00+$ix"
 			export_gpio $pin
 			ln -s /sys/class/gpio/gpio$pin /dev/gpio/FPCHIP2/$(printf P%02d $ix)
@@ -188,7 +191,7 @@ if $HAS_FPCHIP1 && $HAS_FPCHIP2; then
 	lnALO /dev/gpio/FPCHIP1/P10	/dev/gpio/LED/TRG_G
 	lnALO /dev/gpio/FPCHIP1/P11	/dev/gpio/LED/TRG_R
 	lnALO /dev/gpio/FPCHIP1/P15 /dev/gpio/LED/FPGA_DONE
-	echo FPCHIP1 special99	
+	echo FPCHIP1 special99
 elif $HAS_D37; then
 	echo D37 skip special
 else
@@ -206,9 +209,9 @@ lnAL /dev/gpio/CHIP2/P27/	/dev/gpio/IS_RES
 if $HAS_D37; then
 	echo "+++ init D37 LEDS"
 	init_acq2106_leds PWMCHIP
-	init_acq2106d37_leds FPCHIP1	
+	init_acq2106d37_leds FPCHIP1
 elif $HAS_FPCHIP2; then
-	echo "+++ init FPLEDS" 
+	echo "+++ init FPLEDS"
 	init_acq2106_leds FPCHIP2
 else
 	echo "+++ SORRY, NO LEDS "
