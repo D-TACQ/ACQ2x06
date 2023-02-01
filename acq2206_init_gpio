@@ -36,7 +36,7 @@ mkdir -p /dev/gpio/CHIP1
 let pin=$pin00
 let ix=0
 #        P000102030405060710111213141516172021222324252627
-for dir in O O O O O O O O I O O O O O O O O O O O O I O O
+for dir in O O O O O O O O I I I I I O O O O O O O O I O O
 do
 	export_gpio $pin
 	ln -s /sys/class/gpio/gpio$pin /dev/gpio/CHIP1/$(printf P%02o $ix)		
