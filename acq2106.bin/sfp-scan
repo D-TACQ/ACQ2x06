@@ -75,6 +75,15 @@ on_sfp_removed() {
 	[ $3 -ne 0 ] && echo "on_sfp_removed $port"
 }
 
+
+load_overlay() {
+    grep -q configfs /proc/mounts || mount -t configfs none /sys/kernel/config
+    odir=/sys/kernel/config/device-tree/overlays/sfp$1
+    if [ ! -e $odir ]; then
+        mkdir -p $odir
+        cat /mnt/dtb.d/mgt482_sfp${1}_overlay.dtb > $odir/dtbo
+    fi
+}
 do_sfp_scan() {
 	verbose=$1
 	bus0=8
@@ -89,6 +98,7 @@ do_sfp_scan() {
 		rm -f /dev/MGT482/init
 		sfp=1
 		for present in $NEW; do
+		    [ $present -eq 1 ] && load_overlay $sfp
 			mkdir -p /dev/MGT482/SFP$sfp
 			echo $present > /dev/MGT482/SFP$sfp/PRESENT
 			sfp=$(($sfp+1))
