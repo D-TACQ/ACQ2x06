@@ -52,7 +52,7 @@ mkdir -p /dev/gpio/CHIP2
 let pin=$pin10
 let ix=0
 #        P000102030405060710111213141516172021222324252627
-for dir in I I I I I I I I O O O O O O O O O O O O I I I I
+for dir in I I I I I I I I O O O O O O O I O O O O I I I I
 do
 	export_gpio $pin
 	ln -s /sys/class/gpio/gpio$pin /dev/gpio/CHIP2/$(printf P%02o $ix)
@@ -237,12 +237,15 @@ ln -s /sys/bus/i2c/devices/1-002c/rdac0 /dev/acq2006/vap
 ln -s /sys/bus/i2c/devices/1-002c/rdac1 /dev/acq2006/van
 
 echo +++ setting VAP and VAN to MIN BEFORE touching gpio
-echo 254 > /dev/acq2006/vap
-echo 254 > /dev/acq2006/van
+echo 2 > /dev/acq2006/vap
+echo 2 > /dev/acq2006/van
 
-echo +++ now hook 15VA_EN
-lnALO /dev/gpio/CHIP2/P17	/dev/gpio/15VA_EN
+echo +++ now set 15VA_EN direction out
 echo 0 > /dev/gpio/15VA_EN
+echo out > /dev/gpio/CHIP2/P17/direction
+echo 0 > /dev/gpio/15VA_EN
+
+sleep 5
 
 echo "++ acq2206_init_gpio 99"
 
