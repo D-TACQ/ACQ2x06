@@ -1,10 +1,19 @@
 
+init_dummy_leds() { 
+	for led in FMC1_G FMC2_G FMC3_G FMC4_G FMC5_G FMC6_G \
+			   FMC1_R FMC2_R FMC3_R FMC4_R FMC5_R FMC6_R \
+			   ACT_G  ACT_R
+	do
+	    echo 1 > /dev/gpio/LED/$led
+	done
+}
 init_acq2106_leds() {
 	let px=1
 	for led in FMC1_G FMC2_G FMC3_G FMC4_G FMC5_G FMC6_G \
 			   FMC1_R FMC2_R FMC3_R FMC4_R FMC5_R FMC6_R \
 			   ACT_G  ACT_R
-	do		
+	do
+	    rm -f /dev/gpio/LED/$led
 		ln -s /dev/gpio/$1/$(printf P%02d $px)/value /dev/gpio/LED/$led
 		let px=$px+1	
 	done
