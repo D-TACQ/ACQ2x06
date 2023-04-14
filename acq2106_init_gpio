@@ -1,6 +1,7 @@
 #!/bin/sh
 # acq2106_init_gpio
 
+echo "++ acq2106_init_gpio 01"
 source /usr/local/bin/acq400_init_gpio_common.sh
 
 common_begin

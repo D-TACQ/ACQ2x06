@@ -144,7 +144,10 @@ lnAH /dev/gpio/CHIP1/P03 /dev/gpio/CLK/OE_CLK1_ELF4
 lnAH /dev/gpio/CHIP1/P04 /dev/gpio/CLK/OE_CLK1_ELF5
 lnAH /dev/gpio/CHIP1/P05 /dev/gpio/CLK/OE_CLK1_ELF6
 lnAH /dev/gpio/CHIP1/P06 /dev/gpio/CLK/OE_CLK1_ZYNQ
+
 mkdir -p /dev/gpio/LED
+init_dummy_leds
+lnAL /dev/gpio/CHIP1/P07 /dev/gpio/LED/MGT5_G
 lnAL /dev/gpio/CHIP1/P10 /dev/gpio/MGT_PRESENT
 lnAL /dev/gpio/CHIP1/P11 /dev/gpio/HDMI_CABLE_DET_A
 lnAL /dev/gpio/CHIP1/P12 /dev/gpio/HDMI_CABLE_DET_B
@@ -211,8 +214,7 @@ lnAH /dev/gpio/CHIP2/P26/	/dev/gpio/IS_ACQ2006
 lnAL /dev/gpio/CHIP2/P27/	/dev/gpio/IS_RES
 
 if $HAS_D37; then
-	echo "+++ init D37 LEDS"
-	init_acq2106_leds PWMCHIP
+	echo "+++ init D37 LEDS"	
 	init_acq2106d37_leds FPCHIP1
 elif $HAS_FPCHIP2; then
 	echo "+++ init FPLEDS"
@@ -221,7 +223,7 @@ else
 	echo "+++ SORRY, NO LEDS "
 fi
 
-#acq2006_create_pwm
+
 
 set.sys /dev/gpio/SYNC_OUT_GPIO_OUT 1
 echo "setting DIST_CLK_HDMI .. Si5326 is the ONLY valid input.."
@@ -230,7 +232,6 @@ set.sys /dev/gpio/CLK/DIST_CLK_HDMI 1
 common_end
 
 /sbin/insmod /usr/local/lib/modules/si5326.ko
-#/sbin/insmod /usr/local/lib/modules/isl22313.ko
 
 mkdir -p /dev/acq2006/
 ln -s /sys/bus/i2c/devices/1-002c/rdac0 /dev/acq2006/vap
