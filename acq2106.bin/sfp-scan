@@ -92,7 +92,7 @@ do_sfp_scan() {
 		rm -f /dev/MGT482/init
 		sfp=1
 		for present in $NEW; do
-			[ $present -eq 1 ] && load_overlay mgt482_sfp${1}_overlay
+			[ $present -eq 1 ] && load_overlay mgt482_sfp${sfp}_overlay
 			mkdir -p /dev/MGT482/SFP$sfp
 			echo $present > /dev/MGT482/SFP$sfp/PRESENT
 			sfp=$(($sfp+1))
