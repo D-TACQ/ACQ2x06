@@ -25,7 +25,21 @@ if [ $(cat /dev/gpio/MGT_PRESENT) -gt 0 ]; then
    	       S7=C
 	fi
 	if [ -e /sys/bus/i2c/devices/8-0054/eeprom ]; then
-		/usr/local/init/mgt483.init
+                I2CBUS=/sys/bus/i2c/devices/
+                mkdir -p /dev/sites/C
+                ln -s $I2CBUS/8-0054/eeprom /dev/sites/C
+                fru-dump-acq /dev/sites/C/eeprom >/dev/sites/C/details	
+	        source /dev/sites/C/details
+	        
+	        case $FRU_PROD_NAME in
+	        MGT483)
+		      /usr/local/init/mgt483.init;;
+		MGT508)
+		      echo +++ MGT508 detected;;
+		*)
+		      echo "ERROR: unknown site C device detected. Maybe needs a FRU\?"
+		      PS1=FIXME\> /bin/sh;;
+	       esac
 	else
 		/usr/local/init/mgt.init
 	fi
